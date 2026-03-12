@@ -104,7 +104,7 @@ export default function StakingListPage() {
               key={f.id}
               festival={f}
               isStaked={stakedFestivalIds.has(f.id)}
-              isClaimed={stakeByFestival.get(f.id)?.claimed || false}
+              isClaimed={(stakeByFestival.get(f.id) as any)?.claimed || false}
               walletConnected={connected}
             />
           ))}
