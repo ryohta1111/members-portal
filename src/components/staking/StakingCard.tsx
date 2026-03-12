@@ -1,9 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { StatusBadge } from './StatusBadge'
-import { CategoryBadge } from './CategoryBadge'
-import { ProgressBar } from './ProgressBar'
 
 interface Festival {
   id: string
@@ -30,56 +27,59 @@ function fmtDate(iso: string) {
   return `${d.getMonth() + 1}/${d.getDate()}`
 }
 
+function fmtAmount(raw: number, decimals: number) {
+  return (raw / Math.pow(10, decimals)).toLocaleString()
+}
+
 export function StakingCard({ festival, isStaked, walletConnected }: StakingCardProps) {
   const f = festival
+  const apr = Math.round((f.multiplier - 1) * 100)
 
-  let btnLabel = 'ステークする →'
-  let btnClass = 'bg-white text-black hover:bg-gray-200'
+  let btnLabel = 'Stake'
+  let btnClass = 'bg-[#3b82f6] text-white hover:bg-[#2563eb]'
   let disabled = false
 
   if (isStaked) {
-    btnLabel = '✓ ステーク済み'
-    btnClass = 'bg-green-600/20 text-green-400 border border-green-600/40'
-    disabled = false // 詳細は見れる
+    btnLabel = 'Staked ✓'
+    btnClass = 'bg-[#16a34a] text-white'
   } else if (!walletConnected) {
-    btnLabel = 'ウォレットを接続'
-    btnClass = 'bg-[#222] text-[#888]'
+    btnLabel = 'Connect'
+    btnClass = 'bg-[#e5e5e5] text-[#888]'
   } else if (f.status === 'upcoming') {
-    btnLabel = '開始待ち'
-    btnClass = 'bg-[#222] text-[#888] cursor-not-allowed'
+    btnLabel = 'Soon'
+    btnClass = 'bg-[#e5e5e5] text-[#888] cursor-not-allowed'
     disabled = true
   } else if (f.status === 'closed' || f.status === 'paid') {
-    btnLabel = '終了'
-    btnClass = 'bg-[#222] text-[#888] cursor-not-allowed'
+    btnLabel = 'Ended'
+    btnClass = 'bg-[#e5e5e5] text-[#888] cursor-not-allowed'
     disabled = true
   }
 
   const inner = (
-    <div className="bg-[#111] border border-[#222] rounded-lg p-4 hover:border-[#333] transition-colors">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex gap-2">
-          <CategoryBadge category={f.category} />
-          <StatusBadge status={f.status} />
+    <div className="bg-white border border-[#e5e5e5] rounded-xl p-5 hover:shadow-md transition-shadow">
+      <h3 className="text-lg font-bold mb-1">{f.title}</h3>
+
+      <p className="text-3xl font-bold text-[#16a34a] mb-3">
+        APR {apr}%
+      </p>
+
+      <div className="flex items-end justify-between">
+        <div className="text-sm text-[#888] space-y-0.5">
+          <div>
+            <span className="inline-block w-16">Capacity</span>
+            <span className="text-[#1a1a1a] font-mono">
+              {fmtAmount(f.total_staked, f.decimals)} / {fmtAmount(f.max_stake_cap, f.decimals)}
+            </span>
+          </div>
+          <div>
+            <span className="inline-block w-16">Period</span>
+            <span className="text-[#1a1a1a]">
+              {fmtDate(f.start_at)} - {fmtDate(f.end_at)}
+            </span>
+          </div>
         </div>
-        <span className="text-sm text-[#888]">{f.token_symbol}</span>
-      </div>
 
-      <h3 className="text-lg font-bold mb-3">{f.title}</h3>
-
-      <div className="flex gap-6 text-sm text-[#888] mb-3">
-        <span>倍率 <span className="text-white font-mono">×{f.multiplier}</span></span>
-        <span>{fmtDate(f.start_at)} 〜 {fmtDate(f.end_at)}</span>
-      </div>
-
-      <ProgressBar
-        current={f.total_staked}
-        max={f.max_stake_cap}
-        decimals={f.decimals}
-        symbol={f.token_symbol}
-      />
-
-      <div className="mt-3">
-        <span className={`inline-block text-sm font-bold px-4 py-2 rounded ${btnClass}`}>
+        <span className={`inline-block text-sm font-bold px-5 py-2 rounded-full ${btnClass}`}>
           {btnLabel}
         </span>
       </div>
