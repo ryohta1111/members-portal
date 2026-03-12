@@ -27,6 +27,7 @@ export default function StakingListPage() {
   const festivals = data?.festivals || []
   const myStakes = statusData?.stakes || []
   const stakedFestivalIds = new Set(myStakes.map((s: any) => s.festival_id))
+  const stakeByFestival = new Map(myStakes.map((s: any) => [s.festival_id, s]))
 
   const filtered = category
     ? festivals.filter((f: any) => f.category === category)
@@ -103,6 +104,7 @@ export default function StakingListPage() {
               key={f.id}
               festival={f}
               isStaked={stakedFestivalIds.has(f.id)}
+              isClaimed={stakeByFestival.get(f.id)?.claimed || false}
               walletConnected={connected}
             />
           ))}

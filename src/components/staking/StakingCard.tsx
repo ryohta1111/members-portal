@@ -19,6 +19,7 @@ interface Festival {
 interface StakingCardProps {
   festival: Festival
   isStaked?: boolean
+  isClaimed?: boolean
   walletConnected?: boolean
 }
 
@@ -31,15 +32,23 @@ function fmtAmount(raw: number, decimals: number) {
   return (raw / Math.pow(10, decimals)).toLocaleString()
 }
 
-export function StakingCard({ festival, isStaked, walletConnected }: StakingCardProps) {
+export function StakingCard({ festival, isStaked, isClaimed, walletConnected }: StakingCardProps) {
   const f = festival
   const apr = Math.round((f.multiplier - 1) * 100)
 
   let btnLabel = 'Stake'
   let btnClass = 'bg-[#3b82f6] text-white hover:bg-[#2563eb]'
   let disabled = false
+  let claimLink = false
 
-  if (isStaked) {
+  if (isStaked && f.status === 'paid' && !isClaimed) {
+    btnLabel = 'Receive'
+    btnClass = 'bg-[#f97316] text-white hover:bg-[#ea580c]'
+    claimLink = true
+  } else if (isStaked && isClaimed) {
+    btnLabel = 'Claimed ✓'
+    btnClass = 'bg-[#e5e5e5] text-[#888]'
+  } else if (isStaked) {
     btnLabel = 'Staked ✓'
     btnClass = 'bg-[#16a34a] text-white'
   } else if (!walletConnected) {
@@ -87,6 +96,8 @@ export function StakingCard({ festival, isStaked, walletConnected }: StakingCard
   )
 
   if (disabled) return inner
+
+  if (claimLink) return <Link href={`/staking/claim/${f.id}`}>{inner}</Link>
 
   return <Link href={`/staking/${f.id}`}>{inner}</Link>
 }
