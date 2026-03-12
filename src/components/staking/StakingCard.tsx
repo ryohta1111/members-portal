@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useCountUp } from './useCountUp'
 
 interface Festival {
   id: string
@@ -42,43 +43,36 @@ function getBtnState(f: Festival, isStaked?: boolean, isClaimed?: boolean, walle
   const detail = `/staking/${f.id}`
   const claim = `/staking/claim/${f.id}`
 
-  // 1. staked + paid + 未claim → Receive (orange)
   if (isStaked && f.status === 'paid' && !isClaimed) {
     return { label: 'Receive', cls: 'bg-[var(--orange)] text-white', href: claim }
   }
-  // 2. staked + claimed → Claimed (gray) → 詳細リンク
   if (isStaked && isClaimed) {
     return { label: 'Claimed \u2713', cls: 'bg-[var(--border)] text-[var(--text-sub)]', href: detail }
   }
-  // 3. staked + open/closed → Staked (green outline)
   if (isStaked) {
     return { label: 'Staked \u2713', cls: 'bg-transparent text-[var(--green)] border-2 border-[var(--green)]', href: detail }
   }
-  // 4. wallet not connected → Connect
   if (!walletConnected) {
     return { label: 'Connect', cls: 'bg-[var(--border)] text-[var(--text-sub)]', href: detail }
   }
-  // 5. open + 期間内 → Stake (blue)
   if (f.status === 'open') {
     const now = Date.now()
     const inPeriod = now >= new Date(f.start_at).getTime() && now <= new Date(f.end_at).getTime()
     if (inPeriod) {
       return { label: 'Stake', cls: 'bg-[var(--blue)] text-white', href: detail }
     }
-    // open + 期間外 → View (gray)
-    return { label: 'View', cls: 'bg-[var(--border)] text-[var(--text-sub)]', href: detail }
+    return { label: 'View', cls: 'bg-[var(--text)] text-white', href: detail }
   }
-  // 6. upcoming → Soon (gray) → 詳細リンク
   if (f.status === 'upcoming') {
     return { label: 'Soon', cls: 'bg-[var(--border)] text-[var(--text-sub)]', href: detail }
   }
-  // 7. closed/paid (not staked) → Ended (gray) → 詳細リンク
-  return { label: 'View', cls: 'bg-[var(--border)] text-[var(--text-sub)]', href: detail }
+  return { label: 'View', cls: 'bg-[var(--text)] text-white', href: detail }
 }
 
 export function StakingCard({ festival, isStaked, isClaimed, walletConnected }: StakingCardProps) {
   const f = festival
   const apr = Math.round((f.multiplier - 1) * 100)
+  const animatedApr = useCountUp(apr, 1000)
   const btn = getBtnState(f, isStaked, isClaimed, walletConnected)
 
   return (
@@ -86,7 +80,7 @@ export function StakingCard({ festival, isStaked, isClaimed, walletConnected }: 
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] p-6 hover:shadow-md transition-shadow cursor-pointer">
         <h3 className="text-lg font-semibold mb-1">{f.title}</h3>
         <p className="text-3xl font-bold text-[var(--green)] mb-4">
-          APR {apr}%
+          APR {animatedApr}%
         </p>
         <div className="flex items-end justify-between">
           <div className="text-sm text-[var(--text-sub)] space-y-1">

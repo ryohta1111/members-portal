@@ -18,6 +18,7 @@ import { StatusBadge } from '@/components/staking/StatusBadge'
 import { CategoryBadge } from '@/components/staking/CategoryBadge'
 import { ProgressBar } from '@/components/staking/ProgressBar'
 import { StakeModal } from '@/components/staking/StakeModal'
+import { AprCircle } from '@/components/staking/AprCircle'
 import { fetcher } from '@/lib/fetcher'
 
 function fmtDate(iso: string) {
@@ -184,10 +185,7 @@ export default function StakingDetailPage() {
           {/* APR + Capacity + Participants */}
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] p-6">
             <div className="flex items-start gap-5 mb-5">
-              <div className="w-[88px] h-[88px] rounded-full border-[3px] border-[var(--green)] flex flex-col items-center justify-center shrink-0">
-                <span className="text-[22px] font-bold text-[var(--green)] leading-none">{apr}%</span>
-                <span className="text-[10px] text-[var(--text-sub)] font-medium mt-0.5">APR</span>
-              </div>
+              <AprCircle apr={apr} />
               <div className="flex-1">
                 <p className="text-xs text-[var(--text-sub)] mb-2 font-medium">Remaining Capacity</p>
                 <ProgressBar current={f.total_staked} max={f.max_stake_cap} decimals={decimals} />
