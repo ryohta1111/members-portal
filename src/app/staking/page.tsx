@@ -48,7 +48,7 @@ export default function StakingListPage() {
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
       <div className="max-w-[900px] mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-7">
+        <div className="flex items-center justify-between mb-7 animate-fade-in-up">
           <h1 className="text-[28px] font-semibold tracking-tight">Staking</h1>
           <WalletMultiButton style={{
             fontSize: '13px',
@@ -63,7 +63,7 @@ export default function StakingListPage() {
         </div>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-3 gap-4 mb-7">
+        <div className="grid grid-cols-3 gap-4 mb-7 animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
           {[
             { label: 'Total Staked', value: `${fmtAmount(totalStaked, dec)} 035HP` },
             { label: 'Active Pools', value: String(activePools) },
@@ -77,7 +77,7 @@ export default function StakingListPage() {
         </div>
 
         {/* Category tabs */}
-        <div className="flex gap-2 mb-7 flex-wrap">
+        <div className="flex gap-2 mb-7 flex-wrap animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           {CATEGORIES.map((c) => (
             <button
               key={c.key || 'all'}
@@ -100,14 +100,15 @@ export default function StakingListPage() {
 
         {/* Card grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filtered.map((f: any) => (
-            <StakingCard
-              key={f.id}
-              festival={f}
-              isStaked={stakedFestivalIds.has(f.id)}
-              isClaimed={(stakeByFestival.get(f.id) as any)?.claimed || false}
-              walletConnected={connected}
-            />
+          {filtered.map((f: any, idx: number) => (
+            <div key={f.id} className="animate-fade-in-up" style={{ animationDelay: `${0.15 + idx * 0.06}s` }}>
+              <StakingCard
+                festival={f}
+                isStaked={stakedFestivalIds.has(f.id)}
+                isClaimed={(stakeByFestival.get(f.id) as any)?.claimed || false}
+                walletConnected={connected}
+              />
+            </div>
           ))}
         </div>
 

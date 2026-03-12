@@ -14,6 +14,10 @@ function fmtAmount(raw: number, decimals: number) {
   return (raw / Math.pow(10, decimals)).toLocaleString()
 }
 
+function sym(tokenSymbol: string) {
+  return tokenSymbol.startsWith('$') ? tokenSymbol : `$${tokenSymbol}`
+}
+
 function fmtDate(iso: string) {
   const d = new Date(iso)
   return `${d.getMonth() + 1}/${d.getDate()}`
@@ -97,18 +101,18 @@ export default function ClaimPage() {
     <div className="min-h-screen relative" style={{ background: 'var(--bg)' }}>
       <div className="max-w-[900px] mx-auto px-6 py-8 relative z-10">
         {/* Back */}
-        <Link href="/staking" className="inline-flex items-center gap-1.5 text-sm text-[var(--blue)] font-medium mb-5 hover:underline">
+        <Link href="/staking" className="inline-flex items-center gap-1.5 text-sm text-[var(--blue)] font-medium mb-5 hover:underline animate-fade-in-up">
           ← Staking Pools
         </Link>
 
         {/* ═══ Claimed complete ═══ */}
         {isClaimed && (
           <>
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] p-10 text-center mb-4 relative overflow-hidden">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] p-10 text-center mb-4 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
               <Confetti />
               <span className="text-[40px] block mb-4">🎉</span>
               <div className="text-[40px] font-bold tracking-tight mb-2">
-                {fmtAmount(totalAmount, decimals)} ${festival.token_symbol}
+                {fmtAmount(totalAmount, decimals)} {sym(festival.token_symbol)}
               </div>
               <div className="inline-flex items-center gap-1.5 bg-[var(--green-light)] text-[var(--green)] px-3.5 py-1.5 rounded-full text-[13px] font-bold mb-3">
                 ✓ Claimed
@@ -117,18 +121,18 @@ export default function ClaimPage() {
             </div>
 
             {/* Detail grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
               <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-5">
                 <p className="text-xs text-[var(--text-sub)] mb-2 font-medium">Stake</p>
                 <p className="text-xl font-bold font-mono">
                   {fmtAmount(stakeAmount, decimals)}
-                  <span className="text-sm font-medium text-[var(--text-sub)] ml-1">${festival.token_symbol}</span>
+                  <span className="text-sm font-medium text-[var(--text-sub)] ml-1">{sym(festival.token_symbol)}</span>
                 </p>
                 <div className="mt-4">
                   <p className="text-xs text-[var(--text-sub)] mb-2 font-medium">Reward</p>
                   <p className="text-xl font-bold font-mono text-[var(--green)]">
                     +{fmtAmount(rewardOnly, decimals)}
-                    <span className="text-sm font-medium text-[var(--green)] ml-1">${festival.token_symbol}</span>
+                    <span className="text-sm font-medium text-[var(--green)] ml-1">{sym(festival.token_symbol)}</span>
                   </p>
                 </div>
               </div>
@@ -173,7 +177,7 @@ export default function ClaimPage() {
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] p-10 text-center mb-4">
             <div className="text-[32px] mb-3">🎁</div>
             <p className="text-[32px] font-bold tracking-tight mb-2">
-              {fmtAmount(totalAmount, decimals)} ${festival.token_symbol}
+              {fmtAmount(totalAmount, decimals)} {sym(festival.token_symbol)}
             </p>
             <p className="text-sm text-[var(--text-sub)] mb-8">受取可能な報酬</p>
             {error && <p className="text-sm text-[var(--red)] mb-3">{error}</p>}
