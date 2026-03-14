@@ -6,6 +6,7 @@ import useSWR from 'swr'
 import Link from 'next/link'
 import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import { Header } from '@/components/portal/Header'
 import { PublicKey, Transaction } from '@solana/web3.js'
 import {
   createTransferInstruction,
@@ -156,15 +157,7 @@ export default function StakingDetailPage() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
-      {/* Portal-style header */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 32px', height: 56, background: '#fff',
-        borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 38, zIndex: 10,
-      }}>
-        <Link href="/" style={{ fontSize: 18, fontWeight: 700, color: '#1C1B18', textDecoration: 'none', letterSpacing: -0.5 }}>035HP</Link>
-        <WalletMultiButton />
-      </div>
+      <Header />
 
       <div className="max-w-[900px] mx-auto px-6 py-8">
         {/* Back */}

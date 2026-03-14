@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import Link from 'next/link'
+import { Header } from '@/components/portal/Header'
 import './vote.css'
 
 const HELIUS_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY || ''
@@ -235,7 +236,7 @@ export default function VotePage() {
   if (step === 'connect') {
     return (
       <div className="v-page">
-        <div className="v-hdr"><Link href="/" className="v-logo">035HP</Link><WalletMultiButton /></div>
+        <Header />
         <div className="v-gate">
           <div style={{ fontSize: 48 }}>🗳️</div>
           <h1 className="v-gate-title">COMMUNITY VOTE</h1>
@@ -250,7 +251,7 @@ export default function VotePage() {
   if (step === 'checking') {
     return (
       <div className="v-page">
-        <div className="v-hdr"><Link href="/" className="v-logo">035HP</Link><WalletMultiButton /></div>
+        <Header />
         <div className="v-gate">
           <div className="v-spinner" />
           <p className="v-gate-desc">トークン残高を確認中...</p>
@@ -263,7 +264,7 @@ export default function VotePage() {
   if (step === 'denied') {
     return (
       <div className="v-page">
-        <div className="v-hdr"><Link href="/" className="v-logo">035HP</Link><WalletMultiButton /></div>
+        <Header />
         <div className="v-gate">
           <div style={{ fontSize: 48 }}>🔒</div>
           <h2 className="v-gate-title">アクセス不可</h2>
@@ -278,7 +279,7 @@ export default function VotePage() {
   if (step === 'already') {
     return (
       <div className="v-page">
-        <div className="v-hdr"><Link href="/" className="v-logo">035HP</Link><WalletMultiButton /></div>
+        <Header />
         <div className="v-gate">
           <div style={{ fontSize: 48 }}>✅</div>
           <h2 className="v-gate-title">投票済みです</h2>
@@ -293,7 +294,7 @@ export default function VotePage() {
   if (step === 'sending') {
     return (
       <div className="v-page">
-        <div className="v-hdr"><Link href="/" className="v-logo">035HP</Link><WalletMultiButton /></div>
+        <Header />
         <div className="v-gate">
           <p className="v-sending-label">投票を送信中...</p>
           <div className="v-sending-count">{sendingCount.toLocaleString()}</div>
@@ -316,7 +317,7 @@ export default function VotePage() {
   if (step === 'complete') {
     return (
       <div className="v-page">
-        <div className="v-hdr"><Link href="/" className="v-logo">035HP</Link><WalletMultiButton /></div>
+        <Header />
         <div className="v-receipt">
           <div className="v-receipt-thanks">
             <div style={{ fontSize: 32 }}>🎉</div>
@@ -352,7 +353,7 @@ export default function VotePage() {
   if (step === 'confirm') {
     return (
       <div className="v-page">
-        <div className="v-hdr"><Link href="/" className="v-logo">035HP</Link><WalletMultiButton /></div>
+        <Header />
         <div className="v-steps"><div className="v-step done">1</div><div className="v-step-line done" /><div className="v-step active">2</div><div className="v-step-line" /><div className="v-step">3</div></div>
         <div className="v-confirm">
           <h2 className="v-confirm-title">投票内容の確認</h2>
