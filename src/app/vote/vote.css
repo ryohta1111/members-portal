@@ -48,13 +48,7 @@
 }
 .v-btn-ghost:hover { border-color: rgba(0,0,0,0.3); color: #1C1B18; }
 
-/* Connect button override */
-.v-gate .wallet-adapter-button {
-  background: #C84B2F !important; color: #fff !important; border: none !important;
-  padding: 14px 32px !important; border-radius: 100px !important;
-  font-size: 14px !important; font-weight: 700 !important;
-  font-family: 'DM Sans', sans-serif !important;
-}
+/* Connect button override — uses global portal.css styles */
 
 /* Steps */
 .v-steps { display: flex; align-items: center; justify-content: center; padding: 20px 32px; gap: 0; }

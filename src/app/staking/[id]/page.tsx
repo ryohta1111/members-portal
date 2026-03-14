@@ -163,11 +163,7 @@ export default function StakingDetailPage() {
         borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 38, zIndex: 10,
       }}>
         <Link href="/" style={{ fontSize: 18, fontWeight: 700, color: '#1C1B18', textDecoration: 'none', letterSpacing: -0.5 }}>035HP</Link>
-        <WalletMultiButton style={{
-          fontSize: '13px', height: '38px', borderRadius: '9999px',
-          background: '#C84B2F', color: '#fff', border: 'none',
-          fontFamily: 'DM Sans, sans-serif', fontWeight: 600,
-        }} />
+        <WalletMultiButton />
       </div>
 
       <div className="max-w-[900px] mx-auto px-6 py-8">
@@ -400,14 +396,7 @@ export default function StakingDetailPage() {
         {!myStake && f.status === 'open' && !connected && (
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] p-6 mb-4 text-center animate-fade-in-up" style={{ animationDelay: '0.25s' }}>
             <p className="text-sm text-[var(--text-sub)] mb-4">ウォレットを接続してステーキングに参加</p>
-            <WalletMultiButton style={{
-              fontSize: '14px',
-              height: '44px',
-              borderRadius: '9999px',
-              width: '100%',
-              justifyContent: 'center',
-              fontFamily: 'DM Sans, sans-serif',
-            }} />
+            <WalletMultiButton />
           </div>
         )}
 
