@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { TokenCard } from './TokenCard'
+import type { TokenData } from './TokenCard'
 import { BannerCard } from './BannerCard'
+import { TokenModal } from './TokenModal'
 
 type SortTab = 'all' | 'trending' | 'new' | 'mcap'
 
@@ -32,6 +34,7 @@ export function TokenDashboard() {
   const [banners, setBanners] = useState<Banner[]>([])
   const [tab, setTab] = useState<SortTab>('all')
   const [loading, setLoading] = useState(true)
+  const [selectedToken, setSelectedToken] = useState<Token | null>(null)
 
   useEffect(() => {
     fetch('/api/tokens')
@@ -71,7 +74,7 @@ export function TokenDashboard() {
 
     const items: React.ReactNode[] = []
     sorted.forEach((t, i) => {
-      items.push(<TokenCard key={t.id} token={t} />)
+      items.push(<TokenCard key={t.id} token={t} onClick={() => setSelectedToken(t)} />)
       // Check if banners should be inserted after this position
       if (bannerMap[i + 1]) {
         bannerMap[i + 1].forEach(b => {
@@ -119,6 +122,9 @@ export function TokenDashboard() {
             <div className="mix-grid">
               {buildGrid()}
             </div>
+          )}
+          {selectedToken && (
+            <TokenModal token={selectedToken} onClose={() => setSelectedToken(null)} />
           )}
         </div>
       </div>

@@ -2,17 +2,21 @@
 
 import { MiniChart } from './MiniChart'
 
+export interface TokenData {
+  id: string
+  name: string
+  ticker: string
+  mint_address: string | null
+  price: string | null
+  priceChange24h: number | null
+  marketCap: number | null
+  volume24h: number | null
+  links: { platform: string; url: string }[]
+}
+
 interface TokenCardProps {
-  token: {
-    id: string
-    name: string
-    ticker: string
-    mint_address: string | null
-    price: string | null
-    priceChange24h: number | null
-    marketCap: number | null
-    links: { platform: string; url: string }[]
-  }
+  token: TokenData
+  onClick?: () => void
 }
 
 function fmtMC(val: number | null) {
@@ -22,7 +26,7 @@ function fmtMC(val: number | null) {
   return `$${val.toFixed(0)}`
 }
 
-export function TokenCard({ token }: TokenCardProps) {
+export function TokenCard({ token, onClick }: TokenCardProps) {
   const sym = token.ticker.replace('$', '').slice(0, 3).toUpperCase()
   const isUp = token.priceChange24h != null && token.priceChange24h >= 0
 
@@ -30,7 +34,7 @@ export function TokenCard({ token }: TokenCardProps) {
   const dexLink = token.links.find(l => l.platform === 'dexscreener')
 
   return (
-    <div className="tok">
+    <div className="tok" onClick={onClick} style={{ cursor: 'pointer' }}>
       <div className="tok-top">
         <div className="tlogo">{sym}</div>
         <div>

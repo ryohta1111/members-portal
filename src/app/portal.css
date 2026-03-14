@@ -206,4 +206,60 @@
   .step:last-child { border-bottom: none; }
   .hstats { grid-template-columns: 1fr 1fr; }
   .p-footer { padding: 18px 16px; }
+  .tmod { width: 95vw; max-height: 90vh; }
 }
+
+/* ─── TOKEN MODAL ─── */
+.tmod-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  animation: tmod-fade .15s ease-out;
+}
+@keyframes tmod-fade { from { opacity: 0 } to { opacity: 1 } }
+.tmod {
+  background: var(--p-surface); border-radius: 16px; padding: 32px;
+  width: 480px; max-height: 85vh; overflow-y: auto; position: relative;
+  animation: tmod-up .2s ease-out;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.15);
+}
+@keyframes tmod-up { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
+.tmod-close {
+  position: absolute; top: 16px; right: 16px; background: none; border: none;
+  font-size: 22px; color: var(--p-sub); cursor: pointer; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center; border-radius: 8px;
+}
+.tmod-close:hover { background: var(--p-bg); color: var(--p-text); }
+.tmod-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+.tmod-logo {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--brand-bg);
+  color: var(--brand); font-weight: 700; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.tmod-name { font-size: 20px; font-weight: 700; color: var(--p-text); }
+.tmod-sub { font-size: 13px; color: var(--p-sub); }
+.tmod-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;
+}
+.tmod-stat {
+  background: var(--p-bg); border-radius: 10px; padding: 14px 16px;
+}
+.tmod-label { font-size: 11px; color: var(--p-sub); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.tmod-val { font-size: 17px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.tmod-chart { margin-bottom: 20px; }
+.tmod-chart .tchart { height: 120px; }
+.tmod-mint {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: var(--p-bg); border-radius: 8px; cursor: pointer;
+  margin-bottom: 20px; transition: background .12s;
+}
+.tmod-mint:hover { background: #eae9e5; }
+.tmod-mint-label { font-size: 11px; color: var(--p-sub); font-weight: 600; text-transform: uppercase; }
+.tmod-mint-addr { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--p-text); flex: 1; }
+.tmod-mint-copy { font-size: 11px; color: var(--brand); font-weight: 600; }
+.tmod-links { display: flex; gap: 10px; }
+.tmod-btn {
+  flex: 1; text-align: center; padding: 12px; border-radius: 10px;
+  background: var(--p-text); color: #fff; font-size: 13px; font-weight: 600;
+  text-decoration: none; transition: opacity .12s;
+}
+.tmod-btn:hover { opacity: 0.85; }
