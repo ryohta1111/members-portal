@@ -55,7 +55,7 @@ const FEATURES = [
     id: 'game',
     name: 'Game',
     desc: 'Community mini games',
-    href: 'https://dev.035hp.jp/members/',
+    href: '/game',
     iconBg: '#FEF0EC',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="#C84B2F" strokeWidth="2">
