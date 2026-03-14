@@ -38,9 +38,8 @@
 .p-nav a { font-size: 14px; color: var(--p-sub); text-decoration: none; font-weight: 500; }
 .p-nav a:hover { color: var(--p-text); }
 
-/* Connect button (override wallet adapter — global) */
-.wallet-adapter-button,
-button[class*="wallet-adapter"] {
+/* Connect button (override wallet adapter — global, but NOT modal list) */
+.wallet-adapter-button:not(.wallet-adapter-modal-list .wallet-adapter-button) {
   background: var(--brand, #C84B2F) !important;
   color: #fff !important;
   border: none !important;
@@ -58,8 +57,8 @@ button[class*="wallet-adapter"] {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
-.wallet-adapter-button:hover { opacity: 0.9 !important; }
-.wallet-adapter-button-start-icon { display: none !important; }
+.wallet-adapter-button:not(.wallet-adapter-modal-list .wallet-adapter-button):hover { opacity: 0.9 !important; }
+.wallet-adapter-button-start-icon:not(.wallet-adapter-modal-list .wallet-adapter-button-start-icon) { display: none !important; }
 
 /* Hero wallet button — slightly larger */
 .hbtns .wallet-adapter-button,
