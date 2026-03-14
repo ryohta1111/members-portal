@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
+import Link from 'next/link'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { StakingCard } from '@/components/staking/StakingCard'
@@ -46,20 +47,27 @@ export default function StakingListPage() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+      {/* Portal-style header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 32px', height: 56, background: '#fff',
+        borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10,
+      }}>
+        <Link href="/" style={{ fontSize: 18, fontWeight: 700, color: '#1C1B18', textDecoration: 'none', letterSpacing: -0.5 }}>035HP</Link>
+        <WalletMultiButton style={{
+          fontSize: '13px', height: '38px', borderRadius: '9999px',
+          background: '#C84B2F', color: '#fff', border: 'none',
+          fontFamily: 'DM Sans, sans-serif', fontWeight: 600,
+        }} />
+      </div>
+
       <div className="max-w-[900px] mx-auto px-6 py-8">
-        {/* Header */}
+        {/* Page header */}
         <div className="flex items-center justify-between mb-7 animate-fade-in-up">
-          <h1 className="text-[28px] font-semibold tracking-tight">Staking</h1>
-          <WalletMultiButton style={{
-            fontSize: '13px',
-            height: '38px',
-            borderRadius: '9999px',
-            background: 'var(--surface)',
-            color: 'var(--blue)',
-            border: '1px solid var(--border)',
-            fontFamily: 'DM Sans, sans-serif',
-            fontWeight: 500,
-          }} />
+          <div>
+            <Link href="/" className="text-sm text-[var(--text-sub)] hover:text-[var(--text)] mb-2 inline-block" style={{ textDecoration: 'none' }}>← ポータルに戻る</Link>
+            <h1 className="text-[28px] font-semibold tracking-tight">Staking</h1>
+          </div>
         </div>
 
         {/* Summary cards */}
@@ -117,6 +125,14 @@ export default function StakingListPage() {
             ステーキングプールはまだありません
           </div>
         )}
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        padding: '24px 32px', textAlign: 'center', fontSize: 12, color: '#807D76',
+        borderTop: '1px solid rgba(0,0,0,0.06)',
+      }}>
+        2025 035HP Community · <a href="https://members.035hp.jp" style={{ color: '#807D76' }}>members.035hp.jp</a>
       </div>
     </div>
   )

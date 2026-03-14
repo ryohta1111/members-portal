@@ -99,9 +99,23 @@ export default function ClaimPage() {
 
   return (
     <div className="min-h-screen relative" style={{ background: 'var(--bg)' }}>
+      {/* Portal-style header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 32px', height: 56, background: '#fff',
+        borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10,
+      }}>
+        <Link href="/" style={{ fontSize: 18, fontWeight: 700, color: '#1C1B18', textDecoration: 'none', letterSpacing: -0.5 }}>035HP</Link>
+        <WalletMultiButton style={{
+          fontSize: '13px', height: '38px', borderRadius: '9999px',
+          background: '#C84B2F', color: '#fff', border: 'none',
+          fontFamily: 'DM Sans, sans-serif', fontWeight: 600,
+        }} />
+      </div>
+
       <div className="max-w-[900px] mx-auto px-6 py-8 relative z-10">
         {/* Back */}
-        <Link href="/staking" className="inline-flex items-center gap-1.5 text-sm text-[var(--blue)] font-medium mb-5 hover:underline animate-fade-in-up">
+        <Link href="/staking" className="inline-flex items-center gap-1.5 text-sm text-[var(--text-sub)] font-medium mb-5 hover:text-[var(--text)] animate-fade-in-up" style={{ textDecoration: 'none' }}>
           ← Staking Pools
         </Link>
 
@@ -226,6 +240,14 @@ export default function ClaimPage() {
         >
           Staking Pools を見る
         </Link>
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        padding: '24px 32px', textAlign: 'center', fontSize: 12, color: '#807D76',
+        borderTop: '1px solid rgba(0,0,0,0.06)',
+      }}>
+        2025 035HP Community · <a href="https://members.035hp.jp" style={{ color: '#807D76' }}>members.035hp.jp</a>
       </div>
     </div>
   )
