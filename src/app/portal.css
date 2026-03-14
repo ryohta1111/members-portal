@@ -20,7 +20,7 @@
 }
 
 /* ─── TICKER ─── */
-.ticker { background: #1A1916; color: #fff; height: 38px; display: flex; align-items: center; font-size: 13px; overflow: hidden; }
+.ticker { background: #1A1916; color: #fff; height: 38px; display: flex; align-items: center; font-size: 13px; overflow: hidden; position: sticky; top: 0; z-index: 11; }
 .tb { padding: 0 18px; border-right: 1px solid rgba(255,255,255,0.1); display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
 .tw { flex: 1; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent); mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent); }
 .ti { display: flex; gap: 32px; white-space: nowrap; animation: tick 26s linear infinite; }
@@ -32,7 +32,7 @@
 .dn2 { color: var(--p-red); }
 
 /* ─── HEADER ─── */
-.p-hdr { background: var(--p-surface); border-bottom: 0.5px solid var(--p-border-mid); height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; position: sticky; top: 0; z-index: 10; }
+.p-hdr { background: var(--p-surface); border-bottom: 0.5px solid var(--p-border-mid); height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; position: sticky; top: 38px; z-index: 10; }
 .p-logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--p-text); }
 .p-nav { display: flex; gap: 28px; }
 .p-nav a { font-size: 14px; color: var(--p-sub); text-decoration: none; font-weight: 500; }
