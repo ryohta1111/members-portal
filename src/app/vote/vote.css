@@ -12,7 +12,7 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 32px; height: 56px;
   background: #fff; border-bottom: 1px solid rgba(0,0,0,0.08);
-  position: sticky; top: 0; z-index: 10;
+  position: sticky; top: 38px; z-index: 10;
 }
 .v-logo { font-size: 18px; font-weight: 700; color: #1C1B18; text-decoration: none; letter-spacing: -0.5px; }
 .v-hdr-addr { font-size: 12px; font-family: 'DM Mono', monospace; color: #807D76; }
@@ -82,7 +82,7 @@
 .v-summary {
   display: flex; align-items: center; gap: 16px;
   background: #fff; border-bottom: 1px solid rgba(0,0,0,0.08);
-  padding: 14px 32px; position: sticky; top: 56px; z-index: 9;
+  padding: 14px 32px; position: sticky; top: 94px; z-index: 9;
   max-width: 520px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 .v-summary-item { flex: 1; }

@@ -51,7 +51,7 @@ export default function StakingListPage() {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 32px', height: 56, background: '#fff',
-        borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10,
+        borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 38, zIndex: 10,
       }}>
         <Link href="/" style={{ fontSize: 18, fontWeight: 700, color: '#1C1B18', textDecoration: 'none', letterSpacing: -0.5 }}>035HP</Link>
         <WalletMultiButton style={{

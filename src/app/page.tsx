@@ -1,7 +1,5 @@
 'use client'
 
-import './portal.css'
-import { Ticker } from '@/components/portal/Ticker'
 import { Header } from '@/components/portal/Header'
 import { Hero } from '@/components/portal/Hero'
 import { FeatureCards } from '@/components/portal/FeatureCards'
@@ -13,7 +11,6 @@ import { Footer } from '@/components/portal/Footer'
 export default function Home() {
   return (
     <>
-      <Ticker />
       <Header />
       <Hero />
       <FeatureCards />
