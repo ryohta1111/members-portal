@@ -491,7 +491,7 @@
 /* MAP */
 .r-map-container {
   background: var(--radar-surface2);
-  height: 320px;
+  height: 240px;
   position: relative;
   overflow: hidden;
   display: flex;
