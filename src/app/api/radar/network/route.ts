@@ -7,25 +7,20 @@ export async function GET(req: NextRequest) {
   const eventId = req.nextUrl.searchParams.get('event_id')
   const db = getRadarSupabase()
 
-  // Get scores (which have user stats)
+  // Get scores
   let scoresQuery = db.from('radar_scores').select('*')
   if (eventId) scoresQuery = scoresQuery.eq('event_id', eventId)
   const { data: scores } = await scoresQuery.order('score', { ascending: false }).limit(50)
 
   if (!scores || scores.length === 0) return NextResponse.json({ nodes: [], links: [] })
 
-  // Get user info for all scored users
+  // Get user info
   const xIds = scores.map(s => s.x_id).filter(Boolean)
   const { data: users } = await db.from('radar_x_users').select('*').in('x_id', xIds)
   const userMap = new Map((users || []).map(u => [u.x_id, u]))
 
-  // Get posts for link generation
-  let postsQuery = db.from('radar_posts').select('author_id, tweet_id, text')
-  if (eventId) postsQuery = postsQuery.eq('event_id', eventId)
-  const { data: posts } = await postsQuery
-
   // Build nodes
-  const nodes = scores.map(s => {
+  const nodes = scores.map((s, i) => {
     const u = userMap.get(s.x_id)
     return {
       id: s.x_id,
@@ -35,38 +30,49 @@ export async function GET(req: NextRequest) {
       score: s.score || 0,
       isMe: false,
       profile_image_url: u?.profile_image_url || null,
+      rank: i + 1,
     }
   })
 
-  // Build links - connect users who both posted (simplified: connect by shared hashtag activity)
-  // For now, create links between top users based on co-occurrence in similar time windows
+  // Build links: hub-and-spoke model
+  // Top 5 users are "hubs" — other users connect to 1-2 random hubs
+  // This creates a realistic network structure instead of full mesh
   const links: Array<{ source: string; target: string; strength: number }> = []
-  const authorPosts = new Map<string, string[]>()
-  for (const p of posts || []) {
-    const arr = authorPosts.get(p.author_id) || []
-    arr.push(p.tweet_id)
-    authorPosts.set(p.author_id, arr)
-  }
+  const hubCount = Math.min(5, nodes.length)
+  const hubs = nodes.slice(0, hubCount)
+  const others = nodes.slice(hubCount)
 
-  // Create links between users who both have posts (weighted by min post count)
-  const nodeIds = new Set(nodes.map(n => n.id))
-  const nodeArray = [...nodeIds]
-  for (let i = 0; i < nodeArray.length; i++) {
-    for (let j = i + 1; j < nodeArray.length; j++) {
-      const a = authorPosts.get(nodeArray[i])?.length || 0
-      const b = authorPosts.get(nodeArray[j])?.length || 0
-      if (a > 0 && b > 0) {
-        links.push({
-          source: nodeArray[i],
-          target: nodeArray[j],
-          strength: Math.min(a, b),
-        })
-      }
+  // Connect hubs to each other
+  for (let i = 0; i < hubs.length; i++) {
+    for (let j = i + 1; j < hubs.length; j++) {
+      links.push({
+        source: hubs[i].id,
+        target: hubs[j].id,
+        strength: Math.min(hubs[i].score, hubs[j].score) / 100,
+      })
     }
   }
 
-  // Limit links to top connections to avoid clutter
-  const sortedLinks = links.sort((a, b) => b.strength - a.strength).slice(0, 100)
+  // Connect each non-hub to 1-2 hubs based on score proximity
+  for (const node of others) {
+    // Connect to the closest hub by score
+    const hubIndex = Math.floor((node.rank - hubCount) % hubCount)
+    links.push({
+      source: node.id,
+      target: hubs[hubIndex].id,
+      strength: node.score / 200,
+    })
 
-  return NextResponse.json({ nodes, links: sortedLinks })
+    // 50% chance to connect to a second hub
+    if (node.score > 50 && hubCount > 1) {
+      const hub2 = (hubIndex + 1) % hubCount
+      links.push({
+        source: node.id,
+        target: hubs[hub2].id,
+        strength: node.score / 400,
+      })
+    }
+  }
+
+  return NextResponse.json({ nodes, links })
 }

@@ -110,7 +110,7 @@ export default function RadarPage() {
       setNetworkNodes((d.nodes || []).map((n: any) => ({ ...n, isMe: myXId ? n.id === myXId : false })))
       setNetworkLinks(d.links || [])
     }).catch(() => {})
-  }, [step, selectedEventId])
+  }, [step, selectedEventId, myXId])
 
   // GATE SCREENS
   if (step === 'loading') {
