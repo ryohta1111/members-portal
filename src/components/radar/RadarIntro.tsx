@@ -1,76 +1,37 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
-const LINES = [
-  { text: '> CT Radarに接続中...', delay: 1000 },
-  { text: '> トークンゲートを確認中...', delay: 1500 },
-  { text: '> 035HP残高を検証: 保有確認', delay: 2000 },
-  { text: '> #押忍雄祭 データを読み込み中...', delay: 2500 },
-  { text: '> アクセスを許可します', delay: 2900, white: true },
-]
-
 export function RadarIntro({ onDone }: { onDone: () => void }) {
-  const [rings, setRings] = useState([false, false, false, false])
-  const [sweep, setSweep] = useState(false)
-  const [cross, setCross] = useState(false)
-  const [lines, setLines] = useState<boolean[]>(LINES.map(() => false))
-  const [granted, setGranted] = useState(false)
-  const [fadeOut, setFadeOut] = useState(false)
-
-  useEffect(() => {
-    // Rings
-    rings.forEach((_, i) => {
-      setTimeout(() => setRings(prev => { const n = [...prev]; n[i] = true; return n }), 500 + i * 250)
-    })
-    // Sweep
-    setTimeout(() => setSweep(true), 800)
-    // Cross
-    setTimeout(() => setCross(true), 1400)
-    // Terminal lines
-    LINES.forEach((line, i) => {
-      setTimeout(() => setLines(prev => { const n = [...prev]; n[i] = true; return n }), line.delay)
-    })
-    // Granted
-    setTimeout(() => setGranted(true), 3300)
-    // Fade out
-    setTimeout(() => setFadeOut(true), 3900)
-    setTimeout(onDone, 4500)
-  }, [onDone])
-
   return (
-    <div className={`radar-intro ${fadeOut ? 'fade-out' : ''}`}>
-      <div className="radar-scanline" />
-
-      <div className="radar-svg-wrap">
-        <svg viewBox="0 0 200 200" width="200" height="200">
-          <defs>
-            <radialGradient id="sweepGrad">
-              <stop offset="0%" stopColor="transparent" />
-              <stop offset="100%" stopColor="rgba(200,75,47,0.3)" />
-            </radialGradient>
-          </defs>
-          {[80, 60, 40, 20].map((r, i) => (
-            <circle key={i} cx="100" cy="100" r={r} className={`radar-ring ${rings[i] ? 'show' : ''}`} />
-          ))}
-          <path
-            d="M100,100 L100,20 A80,80 0 0,1 169,54 Z"
-            className={`radar-sweep ${sweep ? 'show' : ''}`}
-          />
-          <line x1="100" y1="10" x2="100" y2="190" className={`radar-cross ${cross ? 'show' : ''}`} />
-          <line x1="10" y1="100" x2="190" y2="100" className={`radar-cross ${cross ? 'show' : ''}`} />
-        </svg>
+    <div className="intro" id="radar-intro">
+      <div className="scan-line" />
+      <svg className="radar-svg" width="160" height="160" viewBox="0 0 160 160">
+        <defs>
+          <radialGradient id="sweep-grad" cx="0%" cy="50%" r="100%">
+            <stop offset="0%" stopColor="#C84B2F" stopOpacity={0} />
+            <stop offset="100%" stopColor="#C84B2F" stopOpacity={0.8} />
+          </radialGradient>
+        </defs>
+        <circle className="ring ring-1" cx="80" cy="80" r="20" />
+        <circle className="ring ring-2" cx="80" cy="80" r="40" />
+        <circle className="ring ring-3" cx="80" cy="80" r="60" />
+        <circle className="ring ring-4" cx="80" cy="80" r="75" />
+        <line className="crosshair" x1="80" y1="5" x2="80" y2="155" />
+        <line className="crosshair" x1="5" y1="80" x2="155" y2="80" />
+        <g className="sweep">
+          <path d="M80 80 L80 5 A75 75 0 0 1 155 80 Z" fill="url(#sweep-grad)" opacity="0.35" />
+        </g>
+        <circle cx="80" cy="80" r="2" fill="#C84B2F" style={{ opacity: 0, animation: 'fadeIn .2s ease forwards 1.4s' }} />
+        <circle cx="118" cy="48" r="2.5" fill="#C84B2F" style={{ opacity: 0, animation: 'fadeIn .1s ease forwards 1.7s' }} />
+        <circle cx="55" cy="95" r="1.5" fill="#C84B2F" style={{ opacity: 0, animation: 'fadeIn .1s ease forwards 2.1s' }} />
+      </svg>
+      <div className="term-lines">
+        <div className="term-line tl-1">&gt; CT Radarに接続中...</div>
+        <div className="term-line tl-2">&gt; トークンゲートを確認中...</div>
+        <div className="term-line tl-3">&gt; 035HP残高を検証: 保有確認</div>
+        <div className="term-line tl-4">&gt; #押忍雄祭 データを読み込み中...</div>
+        <div className="term-line tl-5 white">&gt; アクセスを許可します</div>
       </div>
-
-      <div className="radar-terminal">
-        {LINES.map((line, i) => (
-          <div key={i} className={`radar-term-line ${lines[i] ? 'show' : ''} ${line.white ? 'white' : ''}`}>
-            {line.text}
-          </div>
-        ))}
-      </div>
-
-      <div className={`radar-granted ${granted ? 'show' : ''}`}>ACCESS GRANTED</div>
+      <div className="access-granted">Access Granted</div>
     </div>
   )
 }

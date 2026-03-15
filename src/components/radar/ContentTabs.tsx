@@ -2,23 +2,16 @@
 
 const TABS = [
   { id: 'map', label: '世界地図' },
+  { id: 'network', label: 'ネットワーク' },
+  { id: 'buzz', label: 'バズ投稿' },
   { id: 'ranking', label: 'ランキング' },
 ]
 
-interface Props {
-  active: string
-  onChange: (id: string) => void
-}
-
-export function ContentTabs({ active, onChange }: Props) {
+export function ContentTabs({ active, onChange }: { active: string; onChange: (id: string) => void }) {
   return (
-    <div className="radar-ctabs">
+    <div className="tab-bar">
       {TABS.map(t => (
-        <button
-          key={t.id}
-          className={`radar-ctab ${active === t.id ? 'on' : ''}`}
-          onClick={() => onChange(t.id)}
-        >
+        <button key={t.id} className={`tab-item ${active === t.id ? 'active' : ''}`} onClick={() => onChange(t.id)}>
           {t.label}
         </button>
       ))}

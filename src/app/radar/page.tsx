@@ -8,10 +8,13 @@ import { UsernameModal } from '@/components/radar/UsernameModal'
 import { EventBanner } from '@/components/radar/EventBanner'
 import { EventTabs } from '@/components/radar/EventTabs'
 import { KpiGrid } from '@/components/radar/KpiGrid'
+import { PowerScore } from '@/components/radar/PowerScore'
 import { ContentTabs } from '@/components/radar/ContentTabs'
+import { MapView } from '@/components/radar/MapView'
 import { CountryList } from '@/components/radar/CountryList'
 import { RankingTable } from '@/components/radar/RankingTable'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import './radar.css'
 
 const HELIUS_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY || ''
@@ -20,18 +23,21 @@ const INTRO_KEY = 'radar_intro_shown'
 
 type GateStep = 'loading' | 'connect' | 'checking' | 'denied' | 'username' | 'intro' | 'ready'
 
-interface Event {
-  id: string
-  title: string
-  hashtags: string[]
-  start_at: string
-  end_at: string
-  is_active: boolean
-}
+interface Event { id: string; title: string; hashtags: string[]; start_at: string; end_at: string; is_active: boolean }
+
+const NAV_LINKS = [
+  { href: '/', label: 'Portal' },
+  { href: '/radar', label: 'Radar' },
+  { href: '/vote', label: 'Vote' },
+  { href: '/staking', label: 'Staking' },
+  { href: '/game', label: 'Game' },
+]
 
 export default function RadarPage() {
   const { publicKey, connected } = useWallet()
+  const pathname = usePathname()
   const [step, setStep] = useState<GateStep>('loading')
+  const [introFade, setIntroFade] = useState(false)
   const [xUsername, setXUsername] = useState<string | null>(null)
   const [events, setEvents] = useState<Event[]>([])
   const [activeEvent, setActiveEvent] = useState<Event | null>(null)
@@ -41,10 +47,11 @@ export default function RadarPage() {
   const [mapData, setMapData] = useState<{ country_code: string; count: number }[]>([])
   const [ranking, setRanking] = useState<any[]>([])
   const [myRank, setMyRank] = useState<number | null>(null)
+  const [myScore, setMyScore] = useState<any>(null)
 
   const walletAddr = publicKey?.toString() || ''
+  const shortAddr = walletAddr ? `${walletAddr.slice(0, 4)}...${walletAddr.slice(-4)}` : ''
 
-  // Check token balance
   const checkBalance = useCallback(async (addr: string) => {
     setStep('checking')
     try {
@@ -61,188 +68,151 @@ export default function RadarPage() {
       const accs = json.result?.value || []
       const bal = accs.reduce((t: number, a: any) =>
         t + parseFloat(a.account?.data?.parsed?.info?.tokenAmount?.uiAmountString || '0'), 0)
-
       if (bal < 1) { setStep('denied'); return }
 
-      // Check if user has registered X username
       const meRes = await fetch(`/api/radar/me?wallet=${addr}`)
       const meData = await meRes.json()
-
       if (meData.registered && meData.x_username) {
         setXUsername(meData.x_username)
         if (meData.score?.rank) setMyRank(meData.score.rank)
-        // Check intro
+        if (meData.score) setMyScore(meData.score)
         const shown = sessionStorage.getItem(INTRO_KEY)
-        if (shown) { setStep('ready') } else { setStep('intro') }
+        setStep(shown ? 'ready' : 'intro')
       } else {
         setStep('username')
       }
-    } catch {
-      setStep('denied')
-    }
+    } catch { setStep('denied') }
   }, [])
 
   useEffect(() => {
-    if (connected && publicKey) {
-      checkBalance(publicKey.toString())
-    } else {
-      setStep('connect')
-    }
+    if (connected && publicKey) { checkBalance(publicKey.toString()) }
+    else { setStep('connect') }
   }, [connected, publicKey, checkBalance])
 
-  // Fetch events
   useEffect(() => {
-    fetch('/api/radar/events')
-      .then(r => r.json())
-      .then(d => {
-        setEvents(d.events || [])
-        if (d.active) {
-          setActiveEvent(d.active)
-          setSelectedEventId(d.active.id)
-        }
-      })
-      .catch(() => {})
+    fetch('/api/radar/events').then(r => r.json()).then(d => {
+      setEvents(d.events || [])
+      if (d.active) { setActiveEvent(d.active); setSelectedEventId(d.active.id) }
+    }).catch(() => {})
   }, [])
 
-  // Fetch data when event changes
   useEffect(() => {
     if (step !== 'ready') return
     const params = selectedEventId ? `?event_id=${selectedEventId}` : ''
-
-    fetch(`/api/radar/summary${params}`)
-      .then(r => r.json())
-      .then(d => setSummary(d))
-      .catch(() => {})
-
-    fetch(`/api/radar/map${params}`)
-      .then(r => r.json())
-      .then(d => setMapData(Array.isArray(d) ? d : []))
-      .catch(() => {})
-
-    fetch(`/api/radar/ranking${params}`)
-      .then(r => r.json())
-      .then(d => setRanking(Array.isArray(d) ? d : []))
-      .catch(() => {})
+    fetch(`/api/radar/summary${params}`).then(r => r.json()).then(setSummary).catch(() => {})
+    fetch(`/api/radar/map${params}`).then(r => r.json()).then(d => setMapData(Array.isArray(d) ? d : [])).catch(() => {})
+    fetch(`/api/radar/ranking${params}`).then(r => r.json()).then(d => setRanking(Array.isArray(d) ? d : [])).catch(() => {})
   }, [step, selectedEventId])
 
-  // ─── LOADING ───
+  // GATE SCREENS
   if (step === 'loading') {
-    return <div className="radar-page"><div className="radar-gate"><div className="v-spinner" /></div></div>
+    return <div className="radar-page"><div className="radar-gate"><p style={{ color: 'var(--radar-muted)' }}>読み込み中...</p></div></div>
   }
-
-  // ─── CONNECT ───
   if (step === 'connect') {
-    return (
-      <div className="radar-page">
-        <div className="radar-gate">
-          <h2>CT Radar</h2>
-          <p>ウォレットを接続してアクセスしてください</p>
-          <WalletMultiButton />
-        </div>
-      </div>
-    )
+    return <div className="radar-page"><div className="radar-gate"><h2>CT Radar</h2><p>ウォレットを接続してアクセスしてください</p><WalletMultiButton /></div></div>
   }
-
-  // ─── CHECKING ───
   if (step === 'checking') {
-    return (
-      <div className="radar-page">
-        <div className="radar-gate">
-          <div className="v-spinner" />
-          <p>トークン残高を確認中...</p>
-        </div>
-      </div>
-    )
+    return <div className="radar-page"><div className="radar-gate"><p>トークン残高を確認中...</p></div></div>
   }
-
-  // ─── DENIED ───
   if (step === 'denied') {
     return (
-      <div className="radar-page">
-        <div className="radar-gate">
-          <h2>035HP Required</h2>
-          <p>CT Radarにアクセスするには$035HPトークンを1枚以上保有している必要があります。</p>
-          <a href={`https://pump.fun/coin/${TOKEN_MINT}`} target="_blank" rel="noopener noreferrer" className="radar-gate-btn">
-            $035HPを購入する
-          </a>
-        </div>
-      </div>
+      <div className="radar-page"><div className="radar-gate">
+        <h2>035HP Required</h2>
+        <p>CT Radarにアクセスするには$035HPトークンを1枚以上保有している必要があります。</p>
+        <a href={`https://pump.fun/coin/${TOKEN_MINT}`} target="_blank" rel="noopener noreferrer" className="radar-gate-btn">$035HPを購入する</a>
+      </div></div>
     )
   }
-
-  // ─── USERNAME MODAL ───
   if (step === 'username') {
     return (
       <div className="radar-page">
-        <UsernameModal
-          walletAddress={walletAddr}
-          onDone={(username) => {
-            setXUsername(username)
-            const shown = sessionStorage.getItem(INTRO_KEY)
-            if (shown) { setStep('ready') } else { setStep('intro') }
-          }}
-          onSkip={() => {
-            const shown = sessionStorage.getItem(INTRO_KEY)
-            if (shown) { setStep('ready') } else { setStep('intro') }
-          }}
+        <UsernameModal walletAddress={walletAddr}
+          onDone={(u) => { setXUsername(u); setStep(sessionStorage.getItem(INTRO_KEY) ? 'ready' : 'intro') }}
+          onSkip={() => setStep(sessionStorage.getItem(INTRO_KEY) ? 'ready' : 'intro')}
         />
       </div>
     )
   }
-
-  // ─── INTRO ANIMATION ───
   if (step === 'intro') {
     return (
       <div className="radar-page">
-        <RadarIntro onDone={() => {
-          sessionStorage.setItem(INTRO_KEY, '1')
-          setStep('ready')
-        }} />
+        <RadarIntro onDone={() => {}} />
+        {/* Auto-transition after 3.9s */}
+        <AutoTransition onDone={() => { sessionStorage.setItem(INTRO_KEY, '1'); setStep('ready') }} delay={4200} />
       </div>
     )
   }
 
-  // ─── MAIN ───
+  // MAIN
+  const selectedEvent = events.find(e => e.id === selectedEventId)
+  const hashtags = selectedEvent?.hashtags?.map(h => h.replace('#', '')).join(' \u00B7 #') || '035HP'
+
   return (
     <div className="radar-page">
+      {/* NAV */}
+      <nav className="nav">
+        <Link href="/" className="nav-logo">035<span className="acc">HP!</span></Link>
+        <ul className="nav-links">
+          {NAV_LINKS.map(l => (
+            <li key={l.href}><Link href={l.href} className={pathname === l.href ? 'active' : ''}>{l.label}</Link></li>
+          ))}
+        </ul>
+        <div className="wallet-chip">
+          <div className="wallet-dot" />
+          <span>{xUsername || shortAddr}</span>
+        </div>
+      </nav>
+
       <EventBanner event={activeEvent} />
 
-      <div className="radar-hero">
-        <h1>CT Radar</h1>
-        <div className="radar-hero-sub">
-          {activeEvent ? `#${activeEvent.hashtags?.[0]?.replace('#', '') || '035HP'}` : '#035HP'} · 最終更新 1時間前
-        </div>
-        <EventTabs
-          events={events}
-          selectedId={selectedEventId}
-          onSelect={setSelectedEventId}
-        />
+      <div className="hero">
+        <h1 className="hero-title">CT <span className="acc">Radar</span></h1>
+        <p className="hero-subtitle">#{hashtags} — 最終更新 1時間前</p>
+        <EventTabs events={events} selectedId={selectedEventId} onSelect={setSelectedEventId} />
+        <KpiGrid totalPosts={summary.totalPosts} totalReach={summary.totalReach} countries={summary.countries} users={summary.users} myRank={myRank} totalUsers={summary.users} />
+        <PowerScore data={myScore ? {
+          score: myScore.score || 0, rank: myScore.rank, totalUsers: summary.users,
+          follower_score: myScore.follower_score || 0, post_score: myScore.post_score || 0,
+          like_score: myScore.like_score || 0, rt_score: myScore.rt_score || 0,
+          intl_bonus: myScore.intl_bonus || 0, username: xUsername || '',
+        } : null} />
       </div>
-
-      <KpiGrid
-        totalPosts={summary.totalPosts}
-        totalReach={summary.totalReach}
-        countries={summary.countries}
-        users={summary.users}
-        myRank={myRank}
-      />
 
       <ContentTabs active={contentTab} onChange={setContentTab} />
 
-      {contentTab === 'map' && (
-        <div className="radar-map-layout">
-          <div className="radar-map-wrap">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--radar-muted)', fontSize: 14 }}>
-              世界地図（D3.js — Phase 1 実装予定）
-            </div>
+      <div className="content">
+        {contentTab === 'map' && (
+          <div className="panels-grid">
+            <MapView />
+            <CountryList data={mapData} />
           </div>
-          <CountryList data={mapData} />
-        </div>
-      )}
-
-      {contentTab === 'ranking' && (
-        <RankingTable data={ranking} myUsername={xUsername} />
-      )}
+        )}
+        {contentTab === 'ranking' && (
+          <div className="panels-grid">
+            <div /> {/* spacer for grid */}
+            <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
+          </div>
+        )}
+        {contentTab === 'network' && (
+          <div className="panel" style={{ padding: 48, textAlign: 'center' }}>
+            <p style={{ color: 'var(--radar-muted)', fontSize: 13 }}>ネットワーク図 — Phase 2で実装予定</p>
+          </div>
+        )}
+        {contentTab === 'buzz' && (
+          <div className="panel" style={{ padding: 48, textAlign: 'center' }}>
+            <p style={{ color: 'var(--radar-muted)', fontSize: 13 }}>バズ投稿 — Phase 2で実装予定</p>
+          </div>
+        )}
+      </div>
     </div>
   )
+}
+
+// Helper: auto-transition component
+function AutoTransition({ onDone, delay }: { onDone: () => void; delay: number }) {
+  useEffect(() => {
+    const timer = setTimeout(onDone, delay)
+    return () => clearTimeout(timer)
+  }, [onDone, delay])
+  return null
 }

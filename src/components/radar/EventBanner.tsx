@@ -9,33 +9,42 @@ interface Event {
 }
 
 export function EventBanner({ event }: { event: Event | null }) {
-  const [remaining, setRemaining] = useState('')
+  const [cd, setCd] = useState({ d: '00', h: '00', m: '00', s: '00' })
 
   useEffect(() => {
     if (!event) return
     function update() {
-      const diff = new Date(event!.end_at).getTime() - Date.now()
-      if (diff <= 0) { setRemaining('終了'); return }
+      const diff = Math.max(0, new Date(event!.end_at).getTime() - Date.now())
       const d = Math.floor(diff / 86400000)
       const h = Math.floor((diff % 86400000) / 3600000)
       const m = Math.floor((diff % 3600000) / 60000)
-      setRemaining(`${String(d).padStart(2, '0')}日 : ${String(h).padStart(2, '0')}時 : ${String(m).padStart(2, '0')}分`)
+      const s = Math.floor((diff % 60000) / 1000)
+      const pad = (n: number) => String(n).padStart(2, '0')
+      setCd({ d: pad(d), h: pad(h), m: pad(m), s: pad(s) })
     }
     update()
-    const iv = setInterval(update, 60000)
+    const iv = setInterval(update, 1000)
     return () => clearInterval(iv)
   }, [event])
 
   if (!event) return null
 
   return (
-    <div className="radar-event-banner">
-      <div className="radar-event-live">
-        <div className="radar-event-dot" />
-        <span style={{ fontWeight: 600 }}>LIVE</span>
-        <span>{event.title} — 開催中</span>
+    <div className="event-banner">
+      <div className="event-left">
+        <div className="live-badge">LIVE</div>
+        <span className="event-name">{event.title} — 開催中</span>
       </div>
-      <div className="radar-countdown">{remaining} 残り</div>
+      <div className="countdown">
+        <div className="cd-block"><div className="cd-num">{cd.d}</div><div className="cd-label">日</div></div>
+        <div className="cd-sep">:</div>
+        <div className="cd-block"><div className="cd-num">{cd.h}</div><div className="cd-label">時</div></div>
+        <div className="cd-sep">:</div>
+        <div className="cd-block"><div className="cd-num">{cd.m}</div><div className="cd-label">分</div></div>
+        <div className="cd-sep">:</div>
+        <div className="cd-block"><div className="cd-num">{cd.s}</div><div className="cd-label">秒</div></div>
+        <span className="countdown-text">残り</span>
+      </div>
     </div>
   )
 }
