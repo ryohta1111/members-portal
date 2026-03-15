@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 
 const NAV_ITEMS = [
+  { href: '/radar', label: 'Radar' },
   { href: '/vote', label: 'Vote' },
   { href: '/staking', label: 'Staking' },
   { href: '/game', label: 'Game' },

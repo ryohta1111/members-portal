@@ -1,0 +1,133 @@
+/* CT Radar — Dark Theme */
+:root {
+  --radar-bg: #1A1916;
+  --radar-surface: #222119;
+  --radar-surface2: #161512;
+  --radar-border: rgba(255,255,255,0.07);
+  --radar-text: #ffffff;
+  --radar-muted: rgba(255,255,255,0.35);
+  --radar-hint: rgba(255,255,255,0.2);
+  --brand: #C84B2F;
+  --brand-light: rgba(200,75,47,0.12);
+  --brand-border: rgba(200,75,47,0.3);
+}
+
+.radar-page { background: var(--radar-bg); min-height: 100vh; color: var(--radar-text); font-family: 'DM Sans', sans-serif; }
+
+/* Intro animation */
+.radar-intro { position: fixed; inset: 0; background: var(--radar-bg); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.radar-intro.fade-out { opacity: 0; transition: opacity 0.6s; }
+
+.radar-scanline { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--brand), transparent); animation: scanline 1.5s ease-out; }
+@keyframes scanline { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+.radar-svg-wrap { position: relative; width: 200px; height: 200px; margin-bottom: 32px; }
+.radar-ring { fill: none; stroke: var(--brand); stroke-width: 1; opacity: 0; }
+.radar-ring.show { animation: ring-in 0.4s ease-out forwards; }
+@keyframes ring-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 0.3; transform: scale(1); } }
+
+.radar-sweep { fill: url(#sweepGrad); transform-origin: center; animation: sweep 1.6s linear; opacity: 0; }
+.radar-sweep.show { opacity: 1; }
+@keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(720deg); } }
+
+.radar-cross { stroke: var(--brand); stroke-width: 0.5; opacity: 0; }
+.radar-cross.show { animation: cross-in 0.3s ease-out forwards; }
+@keyframes cross-in { from { opacity: 0; } to { opacity: 0.2; } }
+
+.radar-terminal { text-align: left; font-family: 'DM Mono', monospace; font-size: 13px; max-width: 400px; width: 100%; padding: 0 24px; }
+.radar-term-line { opacity: 0; color: var(--radar-muted); margin-bottom: 6px; }
+.radar-term-line.show { animation: term-in 0.3s ease-out forwards; }
+.radar-term-line.white { color: #fff; }
+@keyframes term-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+
+.radar-granted { font-size: 28px; font-weight: 700; color: var(--brand); letter-spacing: 8px; text-transform: uppercase; opacity: 0; margin-top: 24px; }
+.radar-granted.show { animation: granted-in 0.4s ease-out forwards; }
+@keyframes granted-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+/* Event banner */
+.radar-event-banner { background: rgba(200,75,47,0.07); border-bottom: 1px solid rgba(200,75,47,0.18); padding: 10px 48px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+.radar-event-live { display: inline-flex; align-items: center; gap: 8px; }
+.radar-event-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.radar-countdown { font-family: 'DM Mono', monospace; color: var(--radar-muted); }
+
+/* Hero */
+.radar-hero { padding: 32px 48px 0; }
+.radar-hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.radar-hero-sub { font-family: 'DM Mono', monospace; color: var(--radar-muted); font-size: 13px; margin-bottom: 20px; }
+
+/* Event tabs */
+.radar-etabs { display: flex; gap: 6px; margin-bottom: 24px; }
+.radar-etab { padding: 6px 16px; border-radius: 100px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--radar-border); color: var(--radar-muted); background: transparent; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.radar-etab:hover { border-color: rgba(255,255,255,0.15); color: var(--radar-text); }
+.radar-etab.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+/* KPI grid */
+.radar-kpi { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; padding: 0 48px; }
+.radar-kpi-card { background: var(--radar-surface); border: 1px solid var(--radar-border); border-radius: 10px; padding: 16px 18px; }
+.radar-kpi-label { font-size: 11px; color: var(--radar-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 500; }
+.radar-kpi-val { font-size: 24px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.radar-kpi-card.highlight { border-color: var(--brand-border); background: var(--brand-light); }
+.radar-kpi-card.highlight .radar-kpi-val { color: var(--brand); }
+
+/* Content tabs */
+.radar-ctabs { display: flex; gap: 0; border-bottom: 1px solid var(--radar-border); margin: 0 48px 24px; }
+.radar-ctab { padding: 10px 20px; font-size: 13px; font-weight: 500; color: var(--radar-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif; transition: color 0.15s; }
+.radar-ctab:hover { color: var(--radar-text); }
+.radar-ctab.on { color: var(--radar-text); border-bottom-color: var(--brand); }
+
+/* Map + Country layout */
+.radar-map-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; padding: 0 48px 48px; }
+.radar-map-wrap { background: var(--radar-surface); border: 1px solid var(--radar-border); border-radius: 12px; padding: 24px; min-height: 400px; }
+.radar-country-wrap { background: var(--radar-surface); border: 1px solid var(--radar-border); border-radius: 12px; padding: 24px; }
+.radar-country-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+.radar-country-item { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.radar-country-flag { font-size: 20px; }
+.radar-country-name { font-size: 13px; width: 80px; }
+.radar-country-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.radar-country-bar { height: 100%; background: var(--brand); border-radius: 3px; transition: width 0.5s; }
+.radar-country-count { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--radar-muted); width: 50px; text-align: right; }
+
+/* Ranking table */
+.radar-ranking { padding: 0 48px 48px; }
+.radar-rank-table { width: 100%; border-collapse: collapse; }
+.radar-rank-table th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; color: var(--radar-muted); text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid var(--radar-border); }
+.radar-rank-table td { padding: 12px 14px; border-bottom: 1px solid var(--radar-border); font-size: 13px; }
+.radar-rank-table tr:hover td { background: rgba(255,255,255,0.02); }
+.radar-rank-table tr.me td { background: var(--brand-light); }
+.radar-rank-avatar { width: 28px; height: 28px; border-radius: 50%; }
+.radar-rank-user { display: flex; align-items: center; gap: 8px; }
+.radar-you-badge { font-size: 10px; font-weight: 700; color: var(--brand); background: var(--brand-light); padding: 1px 6px; border-radius: 4px; }
+
+/* Username modal */
+.radar-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; }
+.radar-modal { background: var(--radar-surface); border: 1px solid var(--radar-border); border-radius: 16px; padding: 32px; width: 400px; max-width: 90vw; }
+.radar-modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.radar-modal p { font-size: 13px; color: var(--radar-muted); margin-bottom: 20px; line-height: 1.6; }
+.radar-modal-input { width: 100%; padding: 10px 14px; background: var(--radar-bg); border: 1px solid var(--radar-border); border-radius: 8px; color: var(--radar-text); font-size: 14px; font-family: 'DM Mono', monospace; outline: none; box-sizing: border-box; }
+.radar-modal-input:focus { border-color: var(--brand); }
+.radar-modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+.radar-modal-btn { flex: 1; padding: 10px; border-radius: 100px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; border: none; }
+.radar-modal-btn.primary { background: var(--brand); color: #fff; }
+.radar-modal-btn.ghost { background: transparent; color: var(--radar-muted); border: 1px solid var(--radar-border); }
+.radar-modal-note { font-size: 11px; color: var(--radar-hint); margin-top: 12px; text-align: center; }
+
+/* Gate screens */
+.radar-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; gap: 16px; }
+.radar-gate h2 { font-size: 22px; font-weight: 700; }
+.radar-gate p { font-size: 14px; color: var(--radar-muted); max-width: 360px; line-height: 1.6; }
+.radar-gate-btn { background: var(--brand); color: #fff; border: none; padding: 12px 28px; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .radar-kpi { grid-template-columns: repeat(3, 1fr); }
+  .radar-map-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .radar-hero { padding: 24px 16px 0; }
+  .radar-kpi { grid-template-columns: 1fr 1fr; padding: 0 16px; gap: 8px; }
+  .radar-ctabs { margin: 0 16px 16px; }
+  .radar-map-layout { padding: 0 16px 24px; }
+  .radar-ranking { padding: 0 16px 24px; }
+  .radar-event-banner { padding: 10px 16px; }
+}
