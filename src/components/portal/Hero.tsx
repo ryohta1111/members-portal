@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import { MiniChart } from './MiniChart'
+
+const MINT = 'CLD7wRUSwM68q51ayc1wt4Yipc6b2fwLqVm7Rv4Dpump'
 
 interface Stats {
   price: string | null
@@ -51,28 +54,48 @@ export function Hero() {
               </button>
             </div>
           </div>
-          <div className="hstats">
-            <div className="hs">
-              <div className="hl">Price</div>
-              <div className="hv">{stats?.price || '—'}</div>
-              <div className={`hsub ${stats?.priceChange24h != null && stats.priceChange24h >= 0 ? 'up2' : 'dn2'}`}>
-                {stats?.priceChange24h != null ? `${stats.priceChange24h >= 0 ? '+' : ''}${stats.priceChange24h.toFixed(1)}% (24h)` : '—'}
+          <div>
+            <div className="hstats">
+              <div className="hs">
+                <div className="hl">Price</div>
+                <div className="hv">{stats?.price || '—'}</div>
+                <div className={`hsub ${stats?.priceChange24h != null && stats.priceChange24h >= 0 ? 'up2' : 'dn2'}`}>
+                  {stats?.priceChange24h != null ? `${stats.priceChange24h >= 0 ? '+' : ''}${stats.priceChange24h.toFixed(1)}% (24h)` : '—'}
+                </div>
+              </div>
+              <div className="hs">
+                <div className="hl">Market Cap</div>
+                <div className="hv">{fmtMoney(stats?.marketCap ?? null)}</div>
+                <div className="hsub" style={{ color: 'var(--p-sub)' }}>Fully Diluted</div>
+              </div>
+              <div className="hs">
+                <div className="hl">Vol 24h</div>
+                <div className="hv">{fmtMoney(stats?.volume24h ?? null)}</div>
+                <div className="hsub" style={{ color: 'var(--p-sub)' }}>—</div>
+              </div>
+              <div className="hs">
+                <div className="hl">Holders</div>
+                <div className="hv">{stats?.holders?.toLocaleString() || '—'}</div>
+                <div className="hsub" style={{ color: 'var(--p-sub)' }}>Wallets</div>
               </div>
             </div>
-            <div className="hs">
-              <div className="hl">Market Cap</div>
-              <div className="hv">{fmtMoney(stats?.marketCap ?? null)}</div>
-              <div className="hsub" style={{ color: 'var(--p-sub)' }}>Fully Diluted</div>
+
+            {/* Chart */}
+            <div className="hs hero-chart" style={{ marginTop: 10 }}>
+              <MiniChart mint={MINT} up={(stats?.priceChange24h ?? 0) >= 0} />
             </div>
-            <div className="hs">
-              <div className="hl">Vol 24h</div>
-              <div className="hv">{fmtMoney(stats?.volume24h ?? null)}</div>
-              <div className="hsub" style={{ color: 'var(--p-sub)' }}>—</div>
-            </div>
-            <div className="hs">
-              <div className="hl">Holders</div>
-              <div className="hv">{stats?.holders?.toLocaleString() || '—'}</div>
-              <div className="hsub" style={{ color: 'var(--p-sub)' }}>Wallets</div>
+
+            {/* CA + Links */}
+            <div className="hero-meta" style={{ marginTop: 10, display: 'flex', gap: 10 }}>
+              <div className="hero-ca" onClick={() => { navigator.clipboard.writeText(MINT) }}>
+                <span className="hl" style={{ marginBottom: 0, fontSize: 10 }}>CA</span>
+                <span className="hero-ca-addr">{MINT.slice(0, 6)}...{MINT.slice(-4)}</span>
+                <span className="hero-ca-copy">Copy</span>
+              </div>
+              <div className="hero-links">
+                <a href={`https://pump.fun/coin/${MINT}`} target="_blank" rel="noopener noreferrer" className="tlink">pump.fun</a>
+                <a href={`https://dexscreener.com/solana/${MINT}`} target="_blank" rel="noopener noreferrer" className="tlink">DexScreener</a>
+              </div>
             </div>
           </div>
         </div>

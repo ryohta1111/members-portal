@@ -94,6 +94,23 @@
 .hv { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; font-family: 'DM Mono', monospace; color: var(--p-text); }
 .hsub { font-size: 12px; margin-top: 3px; }
 
+/* Hero chart */
+.hero-chart { padding: 12px 18px; }
+.hero-chart .chart-tabs { margin-bottom: 4px; }
+.hero-chart .tchart { height: 64px; }
+
+/* Hero CA + Links */
+.hero-meta { display: flex; gap: 10px; align-items: center; }
+.hero-ca {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  background: var(--p-bg); border: 0.5px solid var(--p-border-mid); border-radius: var(--p-rs);
+  padding: 10px 14px; cursor: pointer; transition: background 0.12s;
+}
+.hero-ca:hover { background: #eae9e5; }
+.hero-ca-addr { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--p-text); flex: 1; }
+.hero-ca-copy { font-size: 11px; color: var(--brand); font-weight: 600; }
+.hero-links { display: flex; gap: 6px; align-items: center; }
+
 /* ─── SECTION ─── */
 .p-sec { padding: 28px 0; }
 .sh { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
