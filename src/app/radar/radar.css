@@ -502,6 +502,25 @@
   justify-content: center;
 }
 
+/* Map buttons */
+.r-map-btn {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  border: 0.5px solid rgba(255,255,255,0.12);
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.r-map-btn:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.2); }
+.r-map-btn--active {
+  border-color: rgba(200,75,47,0.4);
+  color: #C84B2F;
+  background: rgba(200,75,47,0.08);
+}
+
 /* NETWORK */
 .r-network-container {
   background: var(--radar-surface2);

@@ -168,26 +168,27 @@ export function NetworkView({
       .attr('stroke', '#1A1916')
       .attr('stroke-width', (d) => (d.isMe ? 2 : 1.5));
 
-    // Label
+    // Label (hidden by default, shown on hover)
     nodeSel
       .append('text')
-      .text((d) => d.username)
+      .attr('class', 'r-net-label')
+      .text((d) => d.display_name || d.username)
       .attr('text-anchor', 'middle')
       .attr('dy', (d) => nodeRadius(d) + 12)
-      .attr('font-size', '8px')
-      .attr('fill', 'rgba(255,255,255,0.5)')
-      .attr('pointer-events', 'none');
+      .attr('font-size', '9px')
+      .attr('fill', 'rgba(255,255,255,0.7)')
+      .attr('pointer-events', 'none')
+      .style('opacity', 0);
 
-    // ----- Tooltip (title) ---------------------------------------------
-    nodeSel.append('title').text((d) => d.username);
-
-    // ----- Hover -------------------------------------------------------
+    // ----- Hover: show label -------------------------------------------
     nodeSel
       .on('mouseenter', function () {
         d3.select(this).attr('opacity', 1.0);
+        d3.select(this).select('.r-net-label').style('opacity', 1);
       })
       .on('mouseleave', function () {
         d3.select(this).attr('opacity', null);
+        d3.select(this).select('.r-net-label').style('opacity', 0);
       });
 
     // ----- Click: focus ------------------------------------------------
