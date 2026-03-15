@@ -232,7 +232,7 @@
   .tmod { width: 95vw; max-height: 90vh; }
 
   /* Token cards → compact list with sparkline */
-  .tok { padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
+  .tok { padding: 10px 14px; display: flex; align-items: center; gap: 8px; overflow: hidden; }
   .tok-top { margin-bottom: 0; flex-shrink: 0; order: 1; }
   .tlogo { width: 28px; height: 28px; font-size: 8px; }
   .tname { font-size: 12px; }
@@ -242,7 +242,7 @@
   .tchg { font-size: 10px; margin-bottom: 0; }
   .tmc { font-size: 10px; color: var(--p-sub); margin-bottom: 0; }
   .chart-tabs { display: none; }
-  .tok-chart { order: 3; flex: 1; min-width: 50px; }
+  .tok-chart { order: 3; flex: 1; min-width: 0; overflow: hidden; }
   .tchart { height: 28px !important; margin-bottom: 0; }
   .tlinks { display: none; order: 4; }
 }
