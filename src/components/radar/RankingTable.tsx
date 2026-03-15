@@ -1,11 +1,18 @@
 'use client'
 
+import { useState } from 'react'
+
 interface RankEntry {
   rank: number; username: string; display_name: string
   profile_image_url: string | null; score: number
 }
 
+const INITIAL_COUNT = 10
+
 export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry[]; myUsername: string | null; eventTitle: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const visible = expanded ? data : data.slice(0, INITIAL_COUNT)
+
   return (
     <div className="r-panel">
       <div className="r-panel-header">
@@ -13,7 +20,7 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
         <span className="r-panel-sub">{eventTitle} 期間中</span>
       </div>
       <div className="r-ranking-list">
-        {data.map(r => {
+        {visible.map(r => {
           const isMe = myUsername && r.username.toLowerCase() === myUsername.toLowerCase()
           const initials = r.username.slice(0, 2).toUpperCase()
           return (
@@ -33,6 +40,32 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
             </div>
           )
         })}
+        {!expanded && data.length > INITIAL_COUNT && (
+          <button
+            onClick={() => setExpanded(true)}
+            style={{
+              width: '100%', padding: '10px', marginTop: 4,
+              background: 'none', border: '0.5px solid var(--radar-border)',
+              borderRadius: 6, color: 'var(--radar-muted)', fontSize: 11,
+              cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            }}
+          >
+            もっと見る（{data.length}人中 {INITIAL_COUNT}人表示）
+          </button>
+        )}
+        {expanded && data.length > INITIAL_COUNT && (
+          <button
+            onClick={() => setExpanded(false)}
+            style={{
+              width: '100%', padding: '10px', marginTop: 4,
+              background: 'none', border: '0.5px solid var(--radar-border)',
+              borderRadius: 6, color: 'var(--radar-muted)', fontSize: 11,
+              cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            }}
+          >
+            閉じる
+          </button>
+        )}
       </div>
     </div>
   )

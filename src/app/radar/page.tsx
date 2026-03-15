@@ -214,7 +214,9 @@ export default function RadarPage() {
               </svg>
             </div>
           </div>
-          <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
+          <div id="ranking">
+            <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
+          </div>
         </div>
 
         {/* バズ投稿 */}
@@ -242,10 +244,6 @@ export default function RadarPage() {
           </div>
         </div>
 
-        {/* ランキング（フル） */}
-        <div id="ranking">
-          <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
-        </div>
       </div>
     </div>
   )
