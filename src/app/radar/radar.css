@@ -502,7 +502,7 @@
 /* NETWORK */
 .r-network-container {
   background: var(--radar-surface2);
-  height: 320px;
+  height: 500px;
   position: relative;
   overflow: hidden;
 }
