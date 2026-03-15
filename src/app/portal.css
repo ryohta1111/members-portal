@@ -224,17 +224,18 @@
 
   /* Token cards → compact list with sparkline */
   .tok { padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
-  .tok-top { margin-bottom: 0; flex-shrink: 0; min-width: 80px; }
+  .tok-top { margin-bottom: 0; flex-shrink: 0; min-width: 80px; order: 1; }
   .tlogo { width: 28px; height: 28px; font-size: 8px; }
   .tname { font-size: 13px; }
   .tsym { display: none; }
   .tmc { display: none; }
   .chart-tabs { display: none; }
-  .tchart { height: 28px !important; flex: 1; min-width: 60px; margin-bottom: 0; }
-  .tok-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; margin-left: auto; }
+  .tok-chart { order: 2; flex: 1; min-width: 60px; }
+  .tchart { height: 28px !important; margin-bottom: 0; }
+  .tok-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; order: 3; }
   .tprice { font-size: 13px; margin-bottom: 0; }
   .tchg { font-size: 10px; margin-bottom: 0; }
-  .tlinks { display: none; }
+  .tlinks { display: none; order: 4; }
 }
 
 /* ─── TOKEN MODAL ─── */

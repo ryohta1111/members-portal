@@ -51,7 +51,9 @@ export function TokenCard({ token, onClick }: TokenCardProps) {
         </div>
         <div className="tmc">MC {fmtMC(token.marketCap)}</div>
       </div>
-      <MiniChart mint={token.mint_address} up={isUp} />
+      <div className="tok-chart">
+        <MiniChart mint={token.mint_address} up={isUp} />
+      </div>
       <div className="tlinks">
         {pumpLink ? (
           <a className="tlink" href={pumpLink.url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>pump</a>
