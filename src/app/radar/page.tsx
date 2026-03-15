@@ -14,6 +14,7 @@ import { MapView } from '@/components/radar/MapView'
 import { CountryList } from '@/components/radar/CountryList'
 import { RankingTable } from '@/components/radar/RankingTable'
 import { NetworkView } from '@/components/radar/NetworkView'
+import { BuzzFeed } from '@/components/radar/BuzzFeed'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import './radar.css'
@@ -48,6 +49,7 @@ export default function RadarPage() {
   const [ranking, setRanking] = useState<any[]>([])
   const [networkNodes, setNetworkNodes] = useState<any[]>([])
   const [networkLinks, setNetworkLinks] = useState<any[]>([])
+  const [buzzPosts, setBuzzPosts] = useState<any[]>([])
   const [myXId, setMyXId] = useState<string | null>(null)
   const [myRank, setMyRank] = useState<number | null>(null)
   const [myScore, setMyScore] = useState<any>(null)
@@ -106,6 +108,7 @@ export default function RadarPage() {
     fetch(`/api/radar/summary${params}`).then(r => r.json()).then(setSummary).catch(() => {})
     fetch(`/api/radar/map${params}`).then(r => r.json()).then(d => setMapData(Array.isArray(d) ? d : [])).catch(() => {})
     fetch(`/api/radar/ranking${params}`).then(r => r.json()).then(d => setRanking(Array.isArray(d) ? d : [])).catch(() => {})
+    fetch(`/api/radar/buzz${params}`).then(r => r.json()).then(d => setBuzzPosts(Array.isArray(d) ? d : [])).catch(() => {})
     const netParams = myXId ? `${params}${params ? '&' : '?'}my_x_id=${myXId}` : params
     fetch(`/api/radar/network${netParams}`).then(r => r.json()).then(d => {
       setNetworkNodes((d.nodes || []).map((n: any) => ({ ...n, isMe: myXId ? n.id === myXId : false })))
@@ -205,29 +208,7 @@ export default function RadarPage() {
         </div>
 
         {/* バズ投稿 */}
-        <div id="buzz" className="r-panel" style={{ marginBottom: 12 }}>
-          <div className="r-panel-header">
-            <span className="r-panel-title">バズった投稿</span>
-            <span className="r-panel-badge">エンゲージメント上位</span>
-          </div>
-          <div className="r-buzz-list">
-            {ranking.slice(0, 5).map((r, i) => (
-              <div key={i} className={`r-buzz-card ${xUsername && r.username?.toLowerCase() === xUsername.toLowerCase() ? 'r-me' : ''}`}>
-                <div className="r-buzz-header">
-                  <div className="r-buzz-avatar">{r.username?.slice(0, 2).toUpperCase()}</div>
-                  <span className="r-buzz-username">
-                    {r.display_name || r.username}
-                    {xUsername && r.username?.toLowerCase() === xUsername.toLowerCase() && <span className="r-you-badge">YOU</span>}
-                  </span>
-                </div>
-                <div className="r-buzz-text" style={{ color: 'var(--radar-muted)', fontSize: 12 }}>
-                  スコア: {r.score?.toLocaleString()} · 投稿数: {r.period_posts}
-                </div>
-              </div>
-            ))}
-            {ranking.length === 0 && <div style={{ padding: 24, textAlign: 'center', color: 'var(--radar-muted)', fontSize: 13 }}>データなし</div>}
-          </div>
-        </div>
+        <BuzzFeed data={buzzPosts} myUsername={xUsername} />
 
       </div>
     </div>
