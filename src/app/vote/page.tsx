@@ -10,7 +10,6 @@ import './vote.css'
 const HELIUS_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY || ''
 const SB_URL = 'https://mazeypdufgldzoxhdiio.supabase.co'
 const SB_KEY = 'sb_publishable_M5r4eM8ry3jhMWVv_ynpjA_9QeVauhS'
-const TABLE_NAME = 'votes_vol5'
 
 interface GateToken {
   mint: string
@@ -21,7 +20,7 @@ interface GateToken {
   isTarget: boolean
 }
 
-type Step = 'loading' | 'connect' | 'checking' | 'denied' | 'form' | 'confirm' | 'sending' | 'complete' | 'already'
+type Step = 'loading' | 'connect' | 'checking' | 'denied' | 'form' | 'confirm' | 'sending' | 'complete' | 'already' | 'closed'
 
 // 名言カード
 const QUOTE_CARDS: Record<string, { text: string; by: string }[]> = {
@@ -77,6 +76,8 @@ export default function VotePage() {
   const [step, setStep] = useState<Step>('loading')
   const [gateList, setGateList] = useState<GateToken[]>([])
   const [voteTargets, setVoteTargets] = useState<GateToken[]>([])
+  const [tableName, setTableName] = useState<string>('')
+  const [roundTitle, setRoundTitle] = useState<string>('')
   const [totalVotes, setTotalVotes] = useState(0)
   const [qualifyLabel, setQualifyLabel] = useState('')
   const [balanceText, setBalanceText] = useState('')
@@ -94,12 +95,13 @@ export default function VotePage() {
   const used = Object.values(votes).reduce((s, v) => s + v, 0)
   const remaining = totalVotes - used
 
-  // トークン設定をAPIから読み込み
+  // トークン設定とラウンド情報をAPIから読み込み
   useEffect(() => {
     fetch('/api/vote-tokens')
       .then(r => r.json())
-      .then((data: any[]) => {
-        const tokens: GateToken[] = data.map(t => ({
+      .then((data: any) => {
+        const tokenList = data.tokens || data
+        const tokens: GateToken[] = (Array.isArray(tokenList) ? tokenList : []).map((t: any) => ({
           mint: t.mint,
           ticker: t.ticker,
           name: t.name,
@@ -109,7 +111,14 @@ export default function VotePage() {
         }))
         setGateList(tokens.filter(t => t.mint))
         setVoteTargets(tokens.filter(t => t.isTarget))
-        setStep('connect')
+
+        if (data.round) {
+          setTableName(data.round.table_name)
+          setRoundTitle(data.round.title)
+          setStep('connect')
+        } else {
+          setStep('closed')
+        }
       })
       .catch(() => setStep('connect'))
   }, [])
@@ -137,7 +146,7 @@ export default function VotePage() {
       }).join(' / '))
 
       // 重複チェック
-      const dupRes = await fetch(`${SB_URL}/rest/v1/${TABLE_NAME}?wallet_address=eq.${encodeURIComponent(addr)}&select=id`, {
+      const dupRes = await fetch(`${SB_URL}/rest/v1/${tableName}?wallet_address=eq.${encodeURIComponent(addr)}&select=id`, {
         headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
       })
       const dupData = await dupRes.json()
@@ -194,7 +203,7 @@ export default function VotePage() {
     }
 
     try {
-      const res = await fetch(`${SB_URL}/rest/v1/${TABLE_NAME}`, {
+      const res = await fetch(`${SB_URL}/rest/v1/${tableName}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -255,6 +264,21 @@ export default function VotePage() {
         <div className="v-gate">
           <div className="v-spinner" />
           <p className="v-gate-desc">設定を読み込み中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── CLOSED (no active round) ───
+  if (step === 'closed') {
+    return (
+      <div className="v-page">
+        <Header />
+        <div className="v-gate">
+          <div style={{ fontSize: 48 }}>🗳️</div>
+          <h2 className="v-gate-title">COMMUNITY VOTE</h2>
+          <p className="v-gate-desc">現在、投票の受付は行っていません。<br />次回の投票をお待ちください。</p>
+          <Link href="/" className="v-btn">ポータルに戻る</Link>
         </div>
       </div>
     )
