@@ -18,19 +18,10 @@ interface GateToken {
   name: string
   minHolding: number
   voteRatio: number
+  isTarget: boolean
 }
 
-const GATE_LIST: GateToken[] = [
-  { mint: '5C7nFDCgWTLnHgszBd4ksmCak3nouFoMZ9sbAxkApump', ticker: '$OSUNEN', name: '押燃', minHolding: 1, voteRatio: 1.0 },
-  { mint: '4FDtAagigMuFcPp36rbd9bzcYTJgQah2qLMYcYtfpump', ticker: '$INMU', name: 'INMU COIN', minHolding: 1, voteRatio: 1.0 },
-  { mint: '8d4D4FGUrbtTDucywowRD4AnizRKCr1YZaYQ74bRpump', ticker: '$ANIMAL', name: 'SEXY ANIMAL COIN', minHolding: 1, voteRatio: 1.0 },
-  { mint: 'CLD7wRUSwM68q51ayc1wt4Yipc6b2fwLqVm7Rv4Dpump', ticker: '$035HP', name: '035HP!', minHolding: 1, voteRatio: 2.0 },
-]
-
-// 投票対象（$035HPは票数計算のみ、投票先には含めない）
-const VOTE_TARGETS = GATE_LIST.filter(t => t.ticker !== '$035HP')
-
-type Step = 'connect' | 'checking' | 'denied' | 'form' | 'confirm' | 'sending' | 'complete' | 'already'
+type Step = 'loading' | 'connect' | 'checking' | 'denied' | 'form' | 'confirm' | 'sending' | 'complete' | 'already'
 
 // 名言カード
 const QUOTE_CARDS: Record<string, { text: string; by: string }[]> = {
@@ -83,7 +74,9 @@ async function fetchBal(wallet: string, mint: string): Promise<number> {
 
 export default function VotePage() {
   const { publicKey, connected } = useWallet()
-  const [step, setStep] = useState<Step>('connect')
+  const [step, setStep] = useState<Step>('loading')
+  const [gateList, setGateList] = useState<GateToken[]>([])
+  const [voteTargets, setVoteTargets] = useState<GateToken[]>([])
   const [totalVotes, setTotalVotes] = useState(0)
   const [qualifyLabel, setQualifyLabel] = useState('')
   const [balanceText, setBalanceText] = useState('')
@@ -101,24 +94,45 @@ export default function VotePage() {
   const used = Object.values(votes).reduce((s, v) => s + v, 0)
   const remaining = totalVotes - used
 
+  // トークン設定をAPIから読み込み
+  useEffect(() => {
+    fetch('/api/vote-tokens')
+      .then(r => r.json())
+      .then((data: any[]) => {
+        const tokens: GateToken[] = data.map(t => ({
+          mint: t.mint,
+          ticker: t.ticker,
+          name: t.name,
+          minHolding: t.min_holding ?? t.minHolding ?? 1,
+          voteRatio: t.vote_ratio ?? t.voteRatio ?? 1,
+          isTarget: t.is_target ?? t.isTarget ?? true,
+        }))
+        setGateList(tokens.filter(t => t.mint))
+        setVoteTargets(tokens.filter(t => t.isTarget))
+        setStep('connect')
+      })
+      .catch(() => setStep('connect'))
+  }, [])
+
   const checkBalance = useCallback(async (addr: string) => {
+    if (gateList.length === 0) return
     setStep('checking')
     try {
-      const results = await Promise.allSettled(GATE_LIST.map(t => fetchBal(addr, t.mint)))
+      const results = await Promise.allSettled(gateList.map(t => fetchBal(addr, t.mint)))
       const bals = results.map(r => r.status === 'fulfilled' ? r.value : 0)
-      const okTokens = GATE_LIST.filter((_, i) => bals[i] >= GATE_LIST[i].minHolding)
+      const okTokens = gateList.filter((_, i) => bals[i] >= gateList[i].minHolding)
 
       if (okTokens.length === 0) { setStep('denied'); return }
 
       let total = 0
-      GATE_LIST.forEach((t, i) => {
+      gateList.forEach((t, i) => {
         if (bals[i] >= t.minHolding) total += Math.floor(bals[i] * t.voteRatio)
       })
 
       setTotalVotes(total)
       setQualifyLabel(okTokens.map(t => t.ticker).join(' / '))
-      setBalanceText(okTokens.map((t, idx) => {
-        const i = GATE_LIST.indexOf(t)
+      setBalanceText(okTokens.map((t) => {
+        const i = gateList.indexOf(t)
         return `${Math.floor(bals[i]).toLocaleString()} ${t.ticker}`
       }).join(' / '))
 
@@ -131,21 +145,22 @@ export default function VotePage() {
 
       // 初期化
       const initVotes: Record<number, number> = {}
-      VOTE_TARGETS.forEach((_, i) => { initVotes[i] = 0 })
+      voteTargets.forEach((_, i) => { initVotes[i] = 0 })
       setVotes(initVotes)
       setStep('form')
     } catch {
       setStep('denied')
     }
-  }, [])
+  }, [gateList, voteTargets])
 
   useEffect(() => {
+    if (gateList.length === 0) return
     if (connected && publicKey) {
       checkBalance(publicKey.toString())
     } else {
       setStep('connect')
     }
-  }, [connected, publicKey, checkBalance])
+  }, [connected, publicKey, checkBalance, gateList])
 
   function updateVote(idx: number, val: number) {
     const otherUsed = Object.entries(votes).reduce((s, [k, v]) => parseInt(k) !== idx ? s + v : s, 0)
@@ -166,7 +181,7 @@ export default function VotePage() {
   async function handleSend() {
     setSending(true)
     const votesJson: Record<string, number> = {}
-    VOTE_TARGETS.forEach((c, i) => {
+    voteTargets.forEach((c, i) => {
       if ((votes[i] || 0) > 0) votesJson[c.ticker] = votes[i]
     })
 
@@ -230,6 +245,19 @@ export default function VotePage() {
       alert('送信に失敗しました。再度お試しください。')
       setSending(false)
     }
+  }
+
+  // ─── LOADING ───
+  if (step === 'loading') {
+    return (
+      <div className="v-page">
+        <Header />
+        <div className="v-gate">
+          <div className="v-spinner" />
+          <p className="v-gate-desc">設定を読み込み中...</p>
+        </div>
+      </div>
+    )
   }
 
   // ─── CONNECT ───
@@ -331,7 +359,7 @@ export default function VotePage() {
             <div className="v-receipt-row"><span>Total</span><span>{totalVotes.toLocaleString()} 票</span></div>
             <div className="v-receipt-row"><span>Time</span><span>{receiptTime}</span></div>
             <div className="v-receipt-divider" />
-            {VOTE_TARGETS.map((c, i) => {
+            {voteTargets.map((c, i) => {
               const v = votes[i] || 0
               if (v <= 0) return null
               return (
@@ -363,7 +391,7 @@ export default function VotePage() {
           <div className="v-confirm-field"><span>保有票数</span><span>{totalVotes.toLocaleString()} 票</span></div>
           <div className="v-confirm-field"><span>Qualify</span><span>{qualifyLabel}</span></div>
           <div className="v-confirm-votes">
-            {VOTE_TARGETS.map((c, i) => {
+            {voteTargets.map((c, i) => {
               const v = votes[i] || 0
               if (v <= 0) return null
               return (
@@ -436,7 +464,7 @@ export default function VotePage() {
         <div className="v-field">
           <label className="v-field-label">投票先</label>
           <div className="v-vote-list">
-            {VOTE_TARGETS.map((c, i) => (
+            {voteTargets.map((c, i) => (
               <div key={i} className="v-vote-row">
                 <div className="v-vote-info">
                   <span className="v-vote-ticker">{c.ticker}</span>
