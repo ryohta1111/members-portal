@@ -7,10 +7,10 @@ const supabase = createClient(
 )
 
 export async function GET() {
-  // Get active round with its tokens
+  // Get active round
   const { data: rounds } = await supabase
     .from('vote_rounds')
-    .select('*, vote_round_tokens(*)')
+    .select('*')
     .eq('status', 'open')
     .limit(1)
 
@@ -20,9 +20,12 @@ export async function GET() {
     return NextResponse.json({ round: null, tokens: [] })
   }
 
-  // Sort tokens by sort_order
-  const tokens = (activeRound.vote_round_tokens || [])
-    .sort((a: any, b: any) => a.sort_order - b.sort_order)
+  // Get tokens for this round
+  const { data: tokens } = await supabase
+    .from('vote_round_tokens')
+    .select('*')
+    .eq('round_id', activeRound.id)
+    .order('sort_order')
 
   return NextResponse.json({
     round: {
@@ -31,6 +34,6 @@ export async function GET() {
       table_name: activeRound.table_name,
       status: activeRound.status,
     },
-    tokens,
+    tokens: tokens || [],
   })
 }
