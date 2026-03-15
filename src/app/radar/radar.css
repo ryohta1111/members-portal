@@ -510,38 +510,44 @@
 /* COUNTRY LIST */
 .r-country-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  padding: 12px 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px;
 }
 .r-country-item {
   background: rgba(255,255,255,0.04);
-  border-radius: 6px;
-  padding: 8px 10px;
+  border-radius: 8px;
+  padding: 12px 14px;
 }
-.r-country-flag { font-size: 14px; margin-bottom: 3px; }
+.r-country-flag { font-size: 18px; margin-bottom: 4px; }
 .r-country-name {
-  font-size: 9px;
+  font-size: 11px;
   color: var(--radar-muted);
   margin-bottom: 2px;
 }
 .r-country-count {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   color: #fff;
   font-family: 'DM Mono', monospace;
 }
+.r-country-label {
+  font-size: 9px;
+  color: var(--radar-hint);
+  margin-top: 2px;
+  font-family: 'DM Mono', monospace;
+}
 .r-country-bar {
-  height: 2px;
+  height: 3px;
   background: rgba(255,255,255,0.08);
-  border-radius: 1px;
-  margin-top: 5px;
+  border-radius: 2px;
+  margin-top: 6px;
   overflow: hidden;
 }
 .r-country-bar-fill {
   height: 100%;
   background: var(--brand);
-  border-radius: 1px;
+  border-radius: 2px;
 }
 
 /* RANKING */
@@ -551,8 +557,8 @@
 .r-rank-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 0;
+  gap: 10px;
+  padding: 8px 0;
   border-bottom: 0.5px solid rgba(255,255,255,0.05);
   transition: background 0.1s;
   cursor: pointer;
