@@ -499,6 +499,14 @@
   justify-content: center;
 }
 
+/* NETWORK */
+.r-network-container {
+  background: var(--radar-surface2);
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+}
+
 /* COUNTRY LIST */
 .r-country-grid {
   display: grid;
