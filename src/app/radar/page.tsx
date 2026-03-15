@@ -150,24 +150,24 @@ export default function RadarPage() {
   return (
     <div className="radar-page">
       {/* NAV */}
-      <nav className="nav">
-        <Link href="/" className="nav-logo">035<span className="acc">HP!</span></Link>
-        <ul className="nav-links">
+      <nav className="r-nav">
+        <Link href="/" className="r-nav-logo">035<span className="r-acc">HP!</span></Link>
+        <ul className="r-nav-links">
           {NAV_LINKS.map(l => (
             <li key={l.href}><Link href={l.href} className={pathname === l.href ? 'active' : ''}>{l.label}</Link></li>
           ))}
         </ul>
-        <div className="wallet-chip">
-          <div className="wallet-dot" />
+        <div className="r-wallet-chip">
+          <div className="r-wallet-dot" />
           <span>{xUsername || shortAddr}</span>
         </div>
       </nav>
 
       <EventBanner event={activeEvent} />
 
-      <div className="hero">
-        <h1 className="hero-title">CT <span className="acc">Radar</span></h1>
-        <p className="hero-subtitle">#{hashtags} — 最終更新 1時間前</p>
+      <div className="r-hero">
+        <h1 className="r-hero-title">CT <span className="r-acc">Radar</span></h1>
+        <p className="r-hero-subtitle">#{hashtags} — 最終更新 1時間前</p>
         <EventTabs events={events} selectedId={selectedEventId} onSelect={setSelectedEventId} />
         <KpiGrid totalPosts={summary.totalPosts} totalReach={summary.totalReach} countries={summary.countries} users={summary.users} myRank={myRank} totalUsers={summary.users} />
         <PowerScore data={myScore ? {
@@ -180,26 +180,26 @@ export default function RadarPage() {
 
       <ContentTabs active={contentTab} onChange={setContentTab} />
 
-      <div className="content">
+      <div className="r-content">
         {contentTab === 'map' && (
-          <div className="panels-grid">
+          <div className="r-panels-grid">
             <MapView />
             <CountryList data={mapData} />
           </div>
         )}
         {contentTab === 'ranking' && (
-          <div className="panels-grid">
+          <div className="r-panels-grid">
             <div /> {/* spacer for grid */}
             <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
           </div>
         )}
         {contentTab === 'network' && (
-          <div className="panel" style={{ padding: 48, textAlign: 'center' }}>
+          <div className="r-panel" style={{ padding: 48, textAlign: 'center' }}>
             <p style={{ color: 'var(--radar-muted)', fontSize: 13 }}>ネットワーク図 — Phase 2で実装予定</p>
           </div>
         )}
         {contentTab === 'buzz' && (
-          <div className="panel" style={{ padding: 48, textAlign: 'center' }}>
+          <div className="r-panel" style={{ padding: 48, textAlign: 'center' }}>
             <p style={{ color: 'var(--radar-muted)', fontSize: 13 }}>バズ投稿 — Phase 2で実装予定</p>
           </div>
         )}

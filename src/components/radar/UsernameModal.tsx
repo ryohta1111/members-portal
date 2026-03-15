@@ -31,16 +31,16 @@ export function UsernameModal({ walletAddress, onDone, onSkip }: Props) {
   }
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <div className="modal-title">CT Radarにようこそ</div>
-        <div className="modal-desc">
+    <div className="r-modal-overlay">
+      <div className="r-modal">
+        <div className="r-modal-title">CT Radarにようこそ</div>
+        <div className="r-modal-desc">
           あなたのXアカウントを登録してください。コミュニティ内でのあなたの影響が可視化されます。
         </div>
-        <div className="modal-input-wrap">
-          <span className="modal-at">@</span>
+        <div className="r-modal-input-wrap">
+          <span className="r-modal-at">@</span>
           <input
-            className="modal-input"
+            className="r-modal-input"
             value={username}
             onChange={e => setUsername(e.target.value)}
             placeholder="\u30E6\u30FC\u30B6\u30FC\u540D\u3092\u5165\u529B"
@@ -48,13 +48,13 @@ export function UsernameModal({ walletAddress, onDone, onSkip }: Props) {
           />
         </div>
         {error && <div style={{ color: '#ef4444', fontSize: 11, marginBottom: 8 }}>{error}</div>}
-        <div className="modal-buttons">
+        <div className="r-modal-buttons">
           <button className="radar-btn-primary" onClick={handleSubmit} disabled={loading}>
             {loading ? '\u767B\u9332\u4E2D...' : '\u767B\u9332\u3059\u308B'}
           </button>
           <button className="radar-btn-secondary" onClick={onSkip}>あとで</button>
         </div>
-        <div className="modal-note">※プロフィール設定で後から変更可能</div>
+        <div className="r-modal-note">※プロフィール設定で後から変更可能</div>
       </div>
     </div>
   )

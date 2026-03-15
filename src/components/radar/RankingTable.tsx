@@ -7,29 +7,29 @@ interface RankEntry {
 
 export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry[]; myUsername: string | null; eventTitle: string }) {
   return (
-    <div className="panel">
-      <div className="panel-header">
-        <span className="panel-title">影響ランキング</span>
-        <span className="panel-sub">{eventTitle} 期間中</span>
+    <div className="r-panel">
+      <div className="r-panel-header">
+        <span className="r-panel-title">影響ランキング</span>
+        <span className="r-panel-sub">{eventTitle} 期間中</span>
       </div>
-      <div className="ranking-list">
+      <div className="r-ranking-list">
         {data.map(r => {
           const isMe = myUsername && r.username.toLowerCase() === myUsername.toLowerCase()
           const initials = r.username.slice(0, 2).toUpperCase()
           return (
-            <div key={r.rank} className={`rank-row ${isMe ? 'me' : ''}`}>
-              <span className={`rank-num ${isMe ? 'me' : ''}`}>{r.rank}</span>
-              <div className={`rank-avatar ${isMe ? 'me' : ''}`}>
+            <div key={r.rank} className={`r-rank-row ${isMe ? 'r-me' : ''}`}>
+              <span className={`r-rank-num ${isMe ? 'r-me' : ''}`}>{r.rank}</span>
+              <div className={`r-rank-avatar ${isMe ? 'r-me' : ''}`}>
                 {r.profile_image_url
                   ? <img src={r.profile_image_url} alt="" style={{ width: 26, height: 26, borderRadius: '50%' }} />
                   : initials
                 }
               </div>
-              <span className="rank-name">
+              <span className="r-rank-name">
                 {r.display_name || r.username}
-                {isMe && <span className="you-badge">YOU</span>}
+                {isMe && <span className="r-you-badge">YOU</span>}
               </span>
-              <span className={`rank-score ${isMe ? 'me' : ''}`}>{r.score.toLocaleString()}</span>
+              <span className={`r-rank-score ${isMe ? 'r-me' : ''}`}>{r.score.toLocaleString()}</span>
             </div>
           )
         })}

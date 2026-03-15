@@ -30,20 +30,20 @@ export function EventBanner({ event }: { event: Event | null }) {
   if (!event) return null
 
   return (
-    <div className="event-banner">
-      <div className="event-left">
-        <div className="live-badge">LIVE</div>
-        <span className="event-name">{event.title} — 開催中</span>
+    <div className="r-event-banner">
+      <div className="r-event-left">
+        <div className="r-live-badge">LIVE</div>
+        <span className="r-event-name">{event.title} — 開催中</span>
       </div>
-      <div className="countdown">
-        <div className="cd-block"><div className="cd-num">{cd.d}</div><div className="cd-label">日</div></div>
-        <div className="cd-sep">:</div>
-        <div className="cd-block"><div className="cd-num">{cd.h}</div><div className="cd-label">時</div></div>
-        <div className="cd-sep">:</div>
-        <div className="cd-block"><div className="cd-num">{cd.m}</div><div className="cd-label">分</div></div>
-        <div className="cd-sep">:</div>
-        <div className="cd-block"><div className="cd-num">{cd.s}</div><div className="cd-label">秒</div></div>
-        <span className="countdown-text">残り</span>
+      <div className="r-countdown">
+        <div className="r-cd-block"><div className="r-cd-num">{cd.d}</div><div className="r-cd-label">日</div></div>
+        <div className="r-cd-sep">:</div>
+        <div className="r-cd-block"><div className="r-cd-num">{cd.h}</div><div className="r-cd-label">時</div></div>
+        <div className="r-cd-sep">:</div>
+        <div className="r-cd-block"><div className="r-cd-num">{cd.m}</div><div className="r-cd-label">分</div></div>
+        <div className="r-cd-sep">:</div>
+        <div className="r-cd-block"><div className="r-cd-num">{cd.s}</div><div className="r-cd-label">秒</div></div>
+        <span className="r-countdown-text">残り</span>
       </div>
     </div>
   )

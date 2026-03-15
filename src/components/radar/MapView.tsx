@@ -2,12 +2,12 @@
 
 export function MapView() {
   return (
-    <div className="panel">
-      <div className="panel-header">
-        <span className="panel-title">拡散マップ</span>
-        <span className="panel-badge">日本語CT特化</span>
+    <div className="r-panel">
+      <div className="r-panel-header">
+        <span className="r-panel-title">拡散マップ</span>
+        <span className="r-panel-badge">日本語CT特化</span>
       </div>
-      <div className="map-container">
+      <div className="r-map-container">
         <svg width="100%" height="100%" viewBox="0 0 500 220" style={{ position: 'absolute', top: 0, left: 0 }}>
           <rect width="500" height="220" fill="#161512" />
           <rect x="290" y="30" width="50" height="70" rx="4" fill="#C84B2F" opacity="0.75" />

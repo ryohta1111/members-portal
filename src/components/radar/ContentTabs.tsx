@@ -9,9 +9,9 @@ const TABS = [
 
 export function ContentTabs({ active, onChange }: { active: string; onChange: (id: string) => void }) {
   return (
-    <div className="tab-bar">
+    <div className="r-tab-bar">
       {TABS.map(t => (
-        <button key={t.id} className={`tab-item ${active === t.id ? 'active' : ''}`} onClick={() => onChange(t.id)}>
+        <button key={t.id} className={`r-tab-item ${active === t.id ? 'active' : ''}`} onClick={() => onChange(t.id)}>
           {t.label}
         </button>
       ))}

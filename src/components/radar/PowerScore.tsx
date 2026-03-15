@@ -20,39 +20,39 @@ export function PowerScore({ data }: { data: ScoreData | null }) {
   const topPct = data.rank && data.totalUsers > 0 ? Math.round((data.rank / data.totalUsers) * 100) : null
 
   return (
-    <div className="score-row">
-      <div className="score-total">
-        <div className="score-label">CT Power Score</div>
-        <div className="score-number">{data.score.toLocaleString()}</div>
-        <div className="score-rank">{topPct ? `上位 ${topPct}%` : ''}</div>
+    <div className="r-score-row">
+      <div className="r-score-total">
+        <div className="r-score-label">CT Power Score</div>
+        <div className="r-score-number">{data.score.toLocaleString()}</div>
+        <div className="r-score-rank">{topPct ? `上位 ${topPct}%` : ''}</div>
       </div>
-      <div className="score-card">
-        <div className="score-card-title">スコア内訳 — {data.username}</div>
-        <div className="score-bars">
-          <div className="score-bar-row">
-            <span className="score-bar-label">フォロワー</span>
-            <div className="score-bar-bg"><div className="score-bar-fill" style={{ width: pct(data.follower_score) }} /></div>
-            <span className="score-bar-val">+{data.follower_score}</span>
+      <div className="r-score-card">
+        <div className="r-score-card-title">スコア内訳 — {data.username}</div>
+        <div className="r-score-bars">
+          <div className="r-score-bar-row">
+            <span className="r-score-bar-label">フォロワー</span>
+            <div className="r-score-bar-bg"><div className="r-score-bar-fill" style={{ width: pct(data.follower_score) }} /></div>
+            <span className="r-score-bar-val">+{data.follower_score}</span>
           </div>
-          <div className="score-bar-row">
-            <span className="score-bar-label">投稿数</span>
-            <div className="score-bar-bg"><div className="score-bar-fill" style={{ width: pct(data.post_score) }} /></div>
-            <span className="score-bar-val">+{data.post_score}</span>
+          <div className="r-score-bar-row">
+            <span className="r-score-bar-label">投稿数</span>
+            <div className="r-score-bar-bg"><div className="r-score-bar-fill" style={{ width: pct(data.post_score) }} /></div>
+            <span className="r-score-bar-val">+{data.post_score}</span>
           </div>
-          <div className="score-bar-row">
-            <span className="score-bar-label">いいね計</span>
-            <div className="score-bar-bg"><div className="score-bar-fill" style={{ width: pct(data.like_score) }} /></div>
-            <span className="score-bar-val">+{data.like_score}</span>
+          <div className="r-score-bar-row">
+            <span className="r-score-bar-label">いいね計</span>
+            <div className="r-score-bar-bg"><div className="r-score-bar-fill" style={{ width: pct(data.like_score) }} /></div>
+            <span className="r-score-bar-val">+{data.like_score}</span>
           </div>
-          <div className="score-bar-row">
-            <span className="score-bar-label">RT計</span>
-            <div className="score-bar-bg"><div className="score-bar-fill" style={{ width: pct(data.rt_score) }} /></div>
-            <span className="score-bar-val">+{data.rt_score}</span>
+          <div className="r-score-bar-row">
+            <span className="r-score-bar-label">RT計</span>
+            <div className="r-score-bar-bg"><div className="r-score-bar-fill" style={{ width: pct(data.rt_score) }} /></div>
+            <span className="r-score-bar-val">+{data.rt_score}</span>
           </div>
-          <div className="score-bar-row">
-            <span className="score-bar-label">国際リーチ</span>
-            <div className="score-bar-bg"><div className="score-bar-fill" style={{ width: pct(data.intl_bonus), background: 'rgba(200,75,47,0.5)' }} /></div>
-            <span className="score-bar-val" style={{ color: 'rgba(200,75,47,0.6)' }}>+{data.intl_bonus}</span>
+          <div className="r-score-bar-row">
+            <span className="r-score-bar-label">国際リーチ</span>
+            <div className="r-score-bar-bg"><div className="r-score-bar-fill" style={{ width: pct(data.intl_bonus), background: 'rgba(200,75,47,0.5)' }} /></div>
+            <span className="r-score-bar-val" style={{ color: 'rgba(200,75,47,0.6)' }}>+{data.intl_bonus}</span>
           </div>
         </div>
       </div>

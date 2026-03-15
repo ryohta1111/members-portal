@@ -20,18 +20,18 @@ export function CountryList({ data }: { data: CountryData[] }) {
   const max = top6[0]?.count || 1
 
   return (
-    <div className="panel">
-      <div className="panel-header">
-        <span className="panel-title">参加国 TOP6</span>
+    <div className="r-panel">
+      <div className="r-panel-header">
+        <span className="r-panel-title">参加国 TOP6</span>
       </div>
-      <div className="country-grid">
+      <div className="r-country-grid">
         {top6.map(c => (
-          <div key={c.country_code} className="country-item">
-            <div className="country-flag">{FLAGS[c.country_code] || '\u{1F30D}'}</div>
-            <div className="country-name">{NAMES[c.country_code] || c.country_code}</div>
-            <div className="country-count">{c.count.toLocaleString()}</div>
-            <div className="country-bar">
-              <div className="country-bar-fill" style={{ width: `${(c.count / max) * 100}%` }} />
+          <div key={c.country_code} className="r-country-item">
+            <div className="r-country-flag">{FLAGS[c.country_code] || '\u{1F30D}'}</div>
+            <div className="r-country-name">{NAMES[c.country_code] || c.country_code}</div>
+            <div className="r-country-count">{c.count.toLocaleString()}</div>
+            <div className="r-country-bar">
+              <div className="r-country-bar-fill" style={{ width: `${(c.count / max) * 100}%` }} />
             </div>
           </div>
         ))}

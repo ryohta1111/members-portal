@@ -12,31 +12,31 @@ function fmt(n: number) {
 
 export function KpiGrid({ totalPosts, totalReach, countries, users, myRank, totalUsers }: Props) {
   return (
-    <div className="kpi-grid">
-      <div className="kpi-card">
-        <div className="kpi-label">投稿数</div>
-        <div className="kpi-value">{fmt(totalPosts)}</div>
-        <div className="kpi-sub">累計</div>
+    <div className="r-kpi-grid">
+      <div className="r-kpi-card">
+        <div className="r-kpi-label">投稿数</div>
+        <div className="r-kpi-value">{fmt(totalPosts)}</div>
+        <div className="r-kpi-sub">累計</div>
       </div>
-      <div className="kpi-card">
-        <div className="kpi-label">リーチ</div>
-        <div className="kpi-value">{fmt(totalReach)}</div>
-        <div className="kpi-sub">ユニーク</div>
+      <div className="r-kpi-card">
+        <div className="r-kpi-label">リーチ</div>
+        <div className="r-kpi-value">{fmt(totalReach)}</div>
+        <div className="r-kpi-sub">ユニーク</div>
       </div>
-      <div className="kpi-card">
-        <div className="kpi-label">参加国</div>
-        <div className="kpi-value">{countries}</div>
-        <div className="kpi-sub">国・地域</div>
+      <div className="r-kpi-card">
+        <div className="r-kpi-label">参加国</div>
+        <div className="r-kpi-value">{countries}</div>
+        <div className="r-kpi-sub">国・地域</div>
       </div>
-      <div className="kpi-card">
-        <div className="kpi-label">ユーザー</div>
-        <div className="kpi-value">{fmt(users)}</div>
-        <div className="kpi-sub">参加者</div>
+      <div className="r-kpi-card">
+        <div className="r-kpi-label">ユーザー</div>
+        <div className="r-kpi-value">{fmt(users)}</div>
+        <div className="r-kpi-sub">参加者</div>
       </div>
-      <div className="kpi-card me">
-        <div className="kpi-label">あなたの順位</div>
-        <div className="kpi-value brand">{myRank ? `#${myRank}` : '—'}</div>
-        <div className="kpi-sub brand">{myRank ? `${totalUsers}人中` : ''}</div>
+      <div className="r-kpi-card r-me">
+        <div className="r-kpi-label">あなたの順位</div>
+        <div className="r-kpi-value brand">{myRank ? `#${myRank}` : '—'}</div>
+        <div className="r-kpi-sub brand">{myRank ? `${totalUsers}人中` : ''}</div>
       </div>
     </div>
   )
