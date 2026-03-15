@@ -137,7 +137,9 @@ export async function GET(req: NextRequest) {
       // Upsert tweets
       for (const tweet of tweets) {
         const author = userMap.get(tweet.author_id) as any
-        const countryCode = guessCountry(author?.location) || (tweet.lang === 'ja' ? 'JP' : null)
+        // Country: location → lang fallback
+        const LANG_COUNTRY: Record<string, string> = { ja: 'JP', ko: 'KR', zh: 'CN', th: 'TH', vi: 'VN', id: 'ID', tl: 'PH' }
+        const countryCode = guessCountry(author?.location) || LANG_COUNTRY[tweet.lang] || null
 
         await db.from('radar_posts').upsert({
           tweet_id: tweet.id,
