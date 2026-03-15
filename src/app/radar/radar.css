@@ -491,7 +491,7 @@
 /* MAP */
 .r-map-container {
   background: var(--radar-surface2);
-  height: 220px;
+  height: 320px;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -502,7 +502,7 @@
 /* NETWORK */
 .r-network-container {
   background: var(--radar-surface2);
-  height: 220px;
+  height: 320px;
   position: relative;
   overflow: hidden;
 }

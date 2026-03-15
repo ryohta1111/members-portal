@@ -119,10 +119,10 @@ export function NetworkView({
         d3
           .forceLink<SimNode, SimLink>(simLinks)
           .id((d) => d.id)
-          .distance(80)
-          .strength(0.5),
+          .distance(120)
+          .strength(0.3),
       )
-      .force('charge', d3.forceManyBody<SimNode>().strength(-150))
+      .force('charge', d3.forceManyBody<SimNode>().strength(-300))
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force(
         'collide',

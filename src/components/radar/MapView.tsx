@@ -50,8 +50,9 @@ export function MapView({ data }: MapViewProps) {
         .attr('height', height)
         .attr('fill', '#161512')
 
+      const padding = 20
       const projection = d3.geoNaturalEarth1()
-        .fitSize([width, height], { type: 'Sphere' } as any)
+        .fitExtent([[padding, padding], [width - padding, height - padding]], { type: 'Sphere' } as any)
 
       const path = d3.geoPath().projection(projection)
 
