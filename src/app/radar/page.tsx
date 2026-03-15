@@ -42,7 +42,6 @@ export default function RadarPage() {
   const [events, setEvents] = useState<Event[]>([])
   const [activeEvent, setActiveEvent] = useState<Event | null>(null)
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
-  const [contentTab, setContentTab] = useState('map')
   const [summary, setSummary] = useState({ totalPosts: 0, totalReach: 0, countries: 0, users: 0 })
   const [mapData, setMapData] = useState<{ country_code: string; count: number }[]>([])
   const [ranking, setRanking] = useState<any[]>([])
@@ -178,31 +177,75 @@ export default function RadarPage() {
         } : null} />
       </div>
 
-      <ContentTabs active={contentTab} onChange={setContentTab} />
+      <ContentTabs />
 
       <div className="r-content">
-        {contentTab === 'map' && (
-          <div className="r-panels-grid">
-            <MapView />
-            <CountryList data={mapData} />
+        {/* 世界地図 */}
+        <div id="map" className="r-panels-grid">
+          <MapView />
+          <CountryList data={mapData} />
+        </div>
+
+        {/* ネットワーク図 */}
+        <div id="network" className="r-panels-grid">
+          <div className="r-panel">
+            <div className="r-panel-header">
+              <span className="r-panel-title">ネットワーク図</span>
+              <span className="r-panel-sub">クリックでフォーカス — ドラッグで移動</span>
+            </div>
+            <div className="r-network-container">
+              <svg width="100%" height="100%" viewBox="0 0 400 220" style={{ position: 'absolute', top: 0, left: 0 }}>
+                <rect width="400" height="220" fill="#161512" />
+                <line x1="200" y1="110" x2="145" y2="55" stroke="#C84B2F" strokeWidth="1.5" opacity="0.5" />
+                <line x1="200" y1="110" x2="120" y2="135" stroke="#C84B2F" strokeWidth="1" opacity="0.35" />
+                <line x1="200" y1="110" x2="260" y2="50" stroke="#C84B2F" strokeWidth="2" opacity="0.6" />
+                <line x1="200" y1="110" x2="270" y2="150" stroke="#C84B2F" strokeWidth="1" opacity="0.3" />
+                <line x1="200" y1="110" x2="185" y2="175" stroke="#C84B2F" strokeWidth="0.8" opacity="0.25" />
+                <line x1="260" y1="50" x2="310" y2="30" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" />
+                <line x1="145" y1="55" x2="95" y2="30" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" />
+                <circle cx="310" cy="30" r="6" fill="#888780" stroke="#1A1916" strokeWidth="1.5" />
+                <circle cx="95" cy="30" r="8" fill="#888780" stroke="#1A1916" strokeWidth="1.5" />
+                <circle cx="145" cy="55" r="10" fill="#888780" stroke="#1A1916" strokeWidth="2" />
+                <circle cx="120" cy="135" r="9" fill="#888780" stroke="#1A1916" strokeWidth="2" />
+                <circle cx="260" cy="50" r="12" fill="#888780" stroke="#1A1916" strokeWidth="2" />
+                <circle cx="270" cy="150" r="8" fill="#888780" stroke="#1A1916" strokeWidth="1.5" />
+                <circle cx="185" cy="175" r="6" fill="#B4B2A9" stroke="#1A1916" strokeWidth="1.5" />
+                <circle cx="200" cy="110" r="12" fill="#C84B2F" stroke="#1A1916" strokeWidth="2" />
+              </svg>
+            </div>
           </div>
-        )}
-        {contentTab === 'ranking' && (
-          <div className="r-panels-grid">
-            <div /> {/* spacer for grid */}
-            <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
+          <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
+        </div>
+
+        {/* バズ投稿 */}
+        <div id="buzz" className="r-panel" style={{ marginBottom: 12 }}>
+          <div className="r-panel-header">
+            <span className="r-panel-title">バズった投稿</span>
+            <span className="r-panel-badge">エンゲージメント上位</span>
           </div>
-        )}
-        {contentTab === 'network' && (
-          <div className="r-panel" style={{ padding: 48, textAlign: 'center' }}>
-            <p style={{ color: 'var(--radar-muted)', fontSize: 13 }}>ネットワーク図 — Phase 2で実装予定</p>
+          <div className="r-buzz-list">
+            {ranking.slice(0, 5).map((r, i) => (
+              <div key={i} className={`r-buzz-card ${xUsername && r.username?.toLowerCase() === xUsername.toLowerCase() ? 'r-me' : ''}`}>
+                <div className="r-buzz-header">
+                  <div className="r-buzz-avatar">{r.username?.slice(0, 2).toUpperCase()}</div>
+                  <span className="r-buzz-username">
+                    {r.display_name || r.username}
+                    {xUsername && r.username?.toLowerCase() === xUsername.toLowerCase() && <span className="r-you-badge">YOU</span>}
+                  </span>
+                </div>
+                <div className="r-buzz-text" style={{ color: 'var(--radar-muted)', fontSize: 12 }}>
+                  スコア: {r.score?.toLocaleString()} · 投稿数: {r.period_posts}
+                </div>
+              </div>
+            ))}
+            {ranking.length === 0 && <div style={{ padding: 24, textAlign: 'center', color: 'var(--radar-muted)', fontSize: 13 }}>データなし</div>}
           </div>
-        )}
-        {contentTab === 'buzz' && (
-          <div className="r-panel" style={{ padding: 48, textAlign: 'center' }}>
-            <p style={{ color: 'var(--radar-muted)', fontSize: 13 }}>バズ投稿 — Phase 2で実装予定</p>
-          </div>
-        )}
+        </div>
+
+        {/* ランキング（フル） */}
+        <div id="ranking">
+          <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
+        </div>
       </div>
     </div>
   )

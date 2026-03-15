@@ -99,24 +99,42 @@ export async function GET(req: NextRequest) {
     const hashtags = (event.hashtags || []) as string[]
     if (hashtags.length === 0) continue
 
-    const query = hashtags.map(h => h.replace('#', '%23')).join(' OR ')
-    const startTime = new Date(Date.now() - 3600000).toISOString() // 1 hour ago
+    // Check if we have existing data — if not, go back 7 days
+    const { count: existingCount } = await db
+      .from('radar_posts')
+      .select('*', { count: 'exact', head: true })
+      .eq('event_id', event.id)
+
+    const lookbackMs = (existingCount || 0) < 50 ? 7 * 86400000 : 3600000
+    const startTime = new Date(Date.now() - lookbackMs).toISOString()
 
     try {
-      const url = `https://api.x.com/2/tweets/search/recent?query=${encodeURIComponent(hashtags.join(' OR '))}&tweet.fields=public_metrics,author_id,created_at,lang,geo&expansions=author_id&user.fields=public_metrics,location,profile_image_url&max_results=100&start_time=${startTime}`
+      let nextToken: string | undefined = undefined
+      let allTweets: any[] = []
+      let allUsers: any[] = []
 
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      // Paginate through results
+      do {
+        const tokenParam: string = nextToken ? `&next_token=${nextToken}` : ''
+        const url = `https://api.x.com/2/tweets/search/recent?query=${encodeURIComponent(hashtags.join(' OR '))}&tweet.fields=public_metrics,author_id,created_at,lang,geo&expansions=author_id&user.fields=public_metrics,location,profile_image_url&max_results=100&start_time=${startTime}${tokenParam}`
 
-      if (!res.ok) {
-        console.error(`X API error: ${res.status} ${await res.text()}`)
-        continue
-      }
+        const res = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
-      const json = await res.json()
-      const tweets = json.data || []
-      const users = json.includes?.users || []
+        if (!res.ok) {
+          console.error(`X API error: ${res.status} ${await res.text()}`)
+          break
+        }
+
+        const json = await res.json()
+        allTweets.push(...(json.data || []))
+        allUsers.push(...(json.includes?.users || []))
+        nextToken = json.meta?.next_token || undefined
+      } while (nextToken && allTweets.length < 500)
+
+      const tweets = allTweets
+      const users = allUsers
       const userMap = new Map(users.map((u: any) => [u.id, u]))
 
       // Upsert X users

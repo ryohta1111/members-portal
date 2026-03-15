@@ -7,11 +7,16 @@ const TABS = [
   { id: 'ranking', label: 'ランキング' },
 ]
 
-export function ContentTabs({ active, onChange }: { active: string; onChange: (id: string) => void }) {
+export function ContentTabs() {
+  function scrollTo(id: string) {
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
     <div className="r-tab-bar">
       {TABS.map(t => (
-        <button key={t.id} className={`r-tab-item ${active === t.id ? 'active' : ''}`} onClick={() => onChange(t.id)}>
+        <button key={t.id} className="r-tab-item" onClick={() => scrollTo(t.id)}>
           {t.label}
         </button>
       ))}
