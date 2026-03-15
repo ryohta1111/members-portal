@@ -5,6 +5,7 @@ export const revalidate = 300
 
 export async function GET(req: NextRequest) {
   const eventId = req.nextUrl.searchParams.get('event_id')
+  const myXId = req.nextUrl.searchParams.get('my_x_id')
   const db = getRadarSupabase()
 
   // Get scores
@@ -13,6 +14,14 @@ export async function GET(req: NextRequest) {
   const { data: scores } = await scoresQuery.order('score', { ascending: false }).limit(50)
 
   if (!scores || scores.length === 0) return NextResponse.json({ nodes: [], links: [] })
+
+  // Ensure my node is included
+  if (myXId && !scores.find(s => s.x_id === myXId)) {
+    let myQuery = db.from('radar_scores').select('*').eq('x_id', myXId)
+    if (eventId) myQuery = myQuery.eq('event_id', eventId)
+    const { data: myScore } = await myQuery.limit(1).single()
+    if (myScore) scores.push(myScore)
+  }
 
   // Get user info
   const xIds = scores.map(s => s.x_id).filter(Boolean)
@@ -56,7 +65,8 @@ export async function GET(req: NextRequest) {
   // Connect each non-hub to 1-2 hubs based on score proximity
   for (const node of others) {
     // Connect to the closest hub by score
-    const hubIndex = Math.floor((node.rank - hubCount) % hubCount)
+    const idx = nodes.indexOf(node)
+    const hubIndex = Math.floor((idx - hubCount) % hubCount)
     links.push({
       source: node.id,
       target: hubs[hubIndex].id,

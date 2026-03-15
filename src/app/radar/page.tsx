@@ -106,7 +106,8 @@ export default function RadarPage() {
     fetch(`/api/radar/summary${params}`).then(r => r.json()).then(setSummary).catch(() => {})
     fetch(`/api/radar/map${params}`).then(r => r.json()).then(d => setMapData(Array.isArray(d) ? d : [])).catch(() => {})
     fetch(`/api/radar/ranking${params}`).then(r => r.json()).then(d => setRanking(Array.isArray(d) ? d : [])).catch(() => {})
-    fetch(`/api/radar/network${params}`).then(r => r.json()).then(d => {
+    const netParams = myXId ? `${params}${params ? '&' : '?'}my_x_id=${myXId}` : params
+    fetch(`/api/radar/network${netParams}`).then(r => r.json()).then(d => {
       setNetworkNodes((d.nodes || []).map((n: any) => ({ ...n, isMe: myXId ? n.id === myXId : false })))
       setNetworkLinks(d.links || [])
     }).catch(() => {})
