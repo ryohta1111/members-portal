@@ -13,6 +13,7 @@ import { ContentTabs } from '@/components/radar/ContentTabs'
 import { MapView } from '@/components/radar/MapView'
 import { CountryList } from '@/components/radar/CountryList'
 import { RankingTable } from '@/components/radar/RankingTable'
+import { NetworkView } from '@/components/radar/NetworkView'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import './radar.css'
@@ -45,6 +46,9 @@ export default function RadarPage() {
   const [summary, setSummary] = useState({ totalPosts: 0, totalReach: 0, countries: 0, users: 0 })
   const [mapData, setMapData] = useState<{ country_code: string; count: number }[]>([])
   const [ranking, setRanking] = useState<any[]>([])
+  const [networkNodes, setNetworkNodes] = useState<any[]>([])
+  const [networkLinks, setNetworkLinks] = useState<any[]>([])
+  const [myXId, setMyXId] = useState<string | null>(null)
   const [myRank, setMyRank] = useState<number | null>(null)
   const [myScore, setMyScore] = useState<any>(null)
 
@@ -75,6 +79,7 @@ export default function RadarPage() {
         setXUsername(meData.x_username)
         if (meData.score?.rank) setMyRank(meData.score.rank)
         if (meData.score) setMyScore(meData.score)
+        if (meData.x_id) setMyXId(meData.x_id)
         const shown = sessionStorage.getItem(INTRO_KEY)
         setStep(shown ? 'ready' : 'intro')
       } else {
@@ -101,6 +106,10 @@ export default function RadarPage() {
     fetch(`/api/radar/summary${params}`).then(r => r.json()).then(setSummary).catch(() => {})
     fetch(`/api/radar/map${params}`).then(r => r.json()).then(d => setMapData(Array.isArray(d) ? d : [])).catch(() => {})
     fetch(`/api/radar/ranking${params}`).then(r => r.json()).then(d => setRanking(Array.isArray(d) ? d : [])).catch(() => {})
+    fetch(`/api/radar/network${params}`).then(r => r.json()).then(d => {
+      setNetworkNodes((d.nodes || []).map((n: any) => ({ ...n, isMe: myXId ? n.id === myXId : false })))
+      setNetworkLinks(d.links || [])
+    }).catch(() => {})
   }, [step, selectedEventId])
 
   // GATE SCREENS
@@ -182,38 +191,13 @@ export default function RadarPage() {
       <div className="r-content">
         {/* 世界地図 */}
         <div id="map" className="r-panels-grid">
-          <MapView />
+          <MapView data={mapData} />
           <CountryList data={mapData} />
         </div>
 
         {/* ネットワーク図 */}
         <div id="network" className="r-panels-grid">
-          <div className="r-panel">
-            <div className="r-panel-header">
-              <span className="r-panel-title">ネットワーク図</span>
-              <span className="r-panel-sub">クリックでフォーカス — ドラッグで移動</span>
-            </div>
-            <div className="r-network-container">
-              <svg width="100%" height="100%" viewBox="0 0 400 220" style={{ position: 'absolute', top: 0, left: 0 }}>
-                <rect width="400" height="220" fill="#161512" />
-                <line x1="200" y1="110" x2="145" y2="55" stroke="#C84B2F" strokeWidth="1.5" opacity="0.5" />
-                <line x1="200" y1="110" x2="120" y2="135" stroke="#C84B2F" strokeWidth="1" opacity="0.35" />
-                <line x1="200" y1="110" x2="260" y2="50" stroke="#C84B2F" strokeWidth="2" opacity="0.6" />
-                <line x1="200" y1="110" x2="270" y2="150" stroke="#C84B2F" strokeWidth="1" opacity="0.3" />
-                <line x1="200" y1="110" x2="185" y2="175" stroke="#C84B2F" strokeWidth="0.8" opacity="0.25" />
-                <line x1="260" y1="50" x2="310" y2="30" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" />
-                <line x1="145" y1="55" x2="95" y2="30" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" />
-                <circle cx="310" cy="30" r="6" fill="#888780" stroke="#1A1916" strokeWidth="1.5" />
-                <circle cx="95" cy="30" r="8" fill="#888780" stroke="#1A1916" strokeWidth="1.5" />
-                <circle cx="145" cy="55" r="10" fill="#888780" stroke="#1A1916" strokeWidth="2" />
-                <circle cx="120" cy="135" r="9" fill="#888780" stroke="#1A1916" strokeWidth="2" />
-                <circle cx="260" cy="50" r="12" fill="#888780" stroke="#1A1916" strokeWidth="2" />
-                <circle cx="270" cy="150" r="8" fill="#888780" stroke="#1A1916" strokeWidth="1.5" />
-                <circle cx="185" cy="175" r="6" fill="#B4B2A9" stroke="#1A1916" strokeWidth="1.5" />
-                <circle cx="200" cy="110" r="12" fill="#C84B2F" stroke="#1A1916" strokeWidth="2" />
-              </svg>
-            </div>
-          </div>
+          <NetworkView nodes={networkNodes} links={networkLinks} myXId={myXId || undefined} />
           <div id="ranking">
             <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
           </div>
