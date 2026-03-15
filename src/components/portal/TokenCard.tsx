@@ -42,13 +42,15 @@ export function TokenCard({ token, onClick }: TokenCardProps) {
           <div className="tsym">{sym}</div>
         </div>
       </div>
-      <div className="tprice">{token.price || '—'}</div>
-      <div className={`tchg ${isUp ? 'up2' : 'dn2'}`}>
-        {token.priceChange24h != null
-          ? `${isUp ? '+' : ''}${token.priceChange24h.toFixed(1)}%`
-          : '—'}
+      <div className="tok-right">
+        <div className="tprice">{token.price || '—'}</div>
+        <div className={`tchg ${isUp ? 'up2' : 'dn2'}`}>
+          {token.priceChange24h != null
+            ? `${isUp ? '+' : ''}${token.priceChange24h.toFixed(1)}%`
+            : '—'}
+        </div>
+        <div className="tmc">MC {fmtMC(token.marketCap)}</div>
       </div>
-      <div className="tmc">MC {fmtMC(token.marketCap)}</div>
       <MiniChart mint={token.mint_address} up={isUp} />
       <div className="tlinks">
         {pumpLink ? (
