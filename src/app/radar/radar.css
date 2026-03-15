@@ -454,11 +454,14 @@
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   gap: 12px;
   margin-bottom: 12px;
+  align-items: stretch;
 }
 
 /* Panel */
 .r-panel {
   background: var(--radar-surface);
+  display: flex;
+  flex-direction: column;
   border: 0.5px solid var(--radar-border);
   border-radius: 10px;
   overflow: hidden;
@@ -491,7 +494,7 @@
 /* MAP */
 .r-map-container {
   background: var(--radar-surface2);
-  height: 240px;
+  flex: 1;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -502,7 +505,8 @@
 /* NETWORK */
 .r-network-container {
   background: var(--radar-surface2);
-  height: 500px;
+  flex: 1;
+  min-height: 400px;
   position: relative;
   overflow: hidden;
 }
