@@ -221,6 +221,80 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
           pulse()
         })
       })
+
+      // Flow lines from Japan to other countries
+      const jpFeature = countries.features.find((f: any) => numericToAlpha2[+f.id] === 'JP')
+      if (jpFeature) {
+        const jpCenter = projection(d3.geoCentroid(jpFeature))
+        if (jpCenter) {
+          const flowTargets = [...data].sort((a, b) => b.count - a.count)
+            .filter(c => c.country_code !== 'JP' && c.count > 0)
+            .slice(0, 8)
+
+          flowTargets.forEach(({ country_code, count }, idx) => {
+            const feat = countries.features.find((f: any) => numericToAlpha2[+f.id] === country_code)
+            if (!feat) return
+            const targetCenter = projection(d3.geoCentroid(feat))
+            if (!targetCenter) return
+
+            const src = jpCenter
+            const dst = targetCenter
+            const cp: [number, number] = [(src[0] + dst[0]) / 2, Math.min(src[1], dst[1]) - 40]
+            const pathD = `M${src[0]},${src[1]} Q${cp[0]},${cp[1]} ${dst[0]},${dst[1]}`
+            const opacity = Math.min(0.15 + count / 300, 0.6)
+            const strokeWidth = Math.min(0.5 + count / 200, 2)
+
+            // Base line
+            g.append('path')
+              .attr('d', pathD)
+              .attr('fill', 'none')
+              .attr('stroke', `rgba(200,75,47,${opacity * 0.5})`)
+              .attr('stroke-width', 0.4)
+              .attr('pointer-events', 'none')
+
+            // Animated line
+            const animPath = g.append('path')
+              .attr('d', pathD)
+              .attr('fill', 'none')
+              .attr('stroke', '#C84B2F')
+              .attr('stroke-width', strokeWidth)
+              .attr('stroke-linecap', 'round')
+              .attr('opacity', opacity)
+              .attr('pointer-events', 'none')
+
+            const len = (animPath.node() as SVGPathElement).getTotalLength()
+            animPath.attr('stroke-dasharray', `${len * 0.15} ${len}`).attr('stroke-dashoffset', len)
+
+            function loopAnim() {
+              animPath
+                .attr('stroke-dashoffset', len)
+                .transition()
+                .delay(idx * 400 + Math.random() * 1000)
+                .duration(2000)
+                .ease(d3.easeLinear)
+                .attr('stroke-dashoffset', -len * 0.15)
+                .on('end', loopAnim)
+            }
+            loopAnim()
+
+            // Glow at destination
+            const glow = g.append('circle')
+              .attr('cx', dst[0]).attr('cy', dst[1])
+              .attr('r', 3).attr('fill', '#C84B2F').attr('opacity', 0)
+              .attr('pointer-events', 'none')
+
+            function glowLoop() {
+              glow.transition()
+                .delay(idx * 400 + 1800 + Math.random() * 1000)
+                .duration(300).attr('opacity', 0.9).attr('r', 5)
+                .transition()
+                .duration(400).attr('opacity', 0).attr('r', 3)
+                .on('end', glowLoop)
+            }
+            glowLoop()
+          })
+        }
+      }
     })
   }, [data, view, totalPosts, onCountryClick])
 

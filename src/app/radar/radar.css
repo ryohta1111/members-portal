@@ -534,25 +534,26 @@
 .r-country-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  padding: 14px;
+  gap: 4px;
+  padding: 8px 10px;
 }
 .r-country-item {
   background: rgba(255,255,255,0.04);
-  border-radius: 8px;
-  padding: 12px 14px;
+  border-radius: 6px;
+  padding: 6px 8px;
 }
-.r-country-flag { font-size: 18px; margin-bottom: 4px; }
+.r-country-flag { font-size: 13px; margin-bottom: 1px; }
 .r-country-name {
-  font-size: 11px;
+  font-size: 9px;
   color: var(--radar-muted);
-  margin-bottom: 2px;
+  margin-bottom: 0;
 }
 .r-country-count {
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 600;
   color: #fff;
   font-family: 'DM Mono', monospace;
+  line-height: 1;
 }
 .r-country-label {
   font-size: 9px;
@@ -561,10 +562,10 @@
   font-family: 'DM Mono', monospace;
 }
 .r-country-bar {
-  height: 3px;
+  height: 2px;
   background: rgba(255,255,255,0.08);
-  border-radius: 2px;
-  margin-top: 6px;
+  border-radius: 1px;
+  margin-top: 3px;
   overflow: hidden;
 }
 .r-country-bar-fill {
@@ -585,6 +586,7 @@
   border-bottom: 0.5px solid rgba(255,255,255,0.05);
   transition: background 0.1s;
   cursor: pointer;
+  flex-wrap: wrap;
 }
 .r-rank-row:last-child { border: none; }
 .r-rank-row:hover { background: rgba(255,255,255,0.03); margin: 0 -6px; padding: 6px; border-radius: 4px; }
@@ -960,6 +962,50 @@
   transform: translateY(-2px);
   border-color: rgba(200,75,47,0.3);
 }
+
+/* Rank breakdown bars */
+.r-rank-breakdown {
+  padding: 6px 0 4px 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-top: 0.5px solid rgba(255,255,255,0.04);
+  margin-top: 4px;
+}
+.r-sbar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.r-sbar-label {
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
+  width: 40px;
+  flex-shrink: 0;
+}
+.r-sbar-bg {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.r-sbar-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.8s ease;
+}
+.r-sbar-val {
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
+  width: 28px;
+  text-align: right;
+  font-family: 'DM Mono', monospace;
+}
+
+.r-rank-row:nth-child(1) { background: rgba(200,75,47,0.04); border-radius: 8px; }
+.r-rank-row:nth-child(2) { background: rgba(255,255,255,0.02); border-radius: 8px; }
+.r-rank-row:nth-child(3) { background: rgba(255,255,255,0.01); border-radius: 8px; }
 
 /* RESPONSIVE */
 @media (max-width: 900px) {

@@ -52,9 +52,9 @@ interface SimLink {
 // ---------------------------------------------------------------------------
 
 function nodeRadius(d: NetworkNode): number {
-  if (d.isMe) return 12;
-  const r = 6 + Math.sqrt(d.followers_count / 500) * 2;
-  return Math.max(6, Math.min(18, r));
+  if (d.isMe) return 14;
+  const base = Math.sqrt(d.followers_count / 200) * 2;
+  return Math.max(5, Math.min(base, 20));
 }
 
 function edgeWidth(strength: number): number {
@@ -94,6 +94,25 @@ export function NetworkView({
     const svg = d3.select(svgEl);
     svg.selectAll('*').remove();
     svg.attr('width', width).attr('height', height);
+
+    // Remove old tooltip
+    d3.select(containerRef.current).selectAll('.r-net-tooltip').remove();
+
+    const tooltip = d3.select(containerRef.current)
+      .append('div')
+      .attr('class', 'r-net-tooltip')
+      .style('position', 'absolute')
+      .style('background', '#222119')
+      .style('border', '0.5px solid rgba(200,75,47,0.3)')
+      .style('border-radius', '6px')
+      .style('padding', '8px 12px')
+      .style('pointer-events', 'none')
+      .style('opacity', '0')
+      .style('font-family', "'DM Sans', sans-serif")
+      .style('font-size', '11px')
+      .style('color', '#fff')
+      .style('z-index', '10')
+      .style('transition', 'opacity 0.15s');
 
     // Deep-copy data so D3 can mutate freely
     const simNodes: SimNode[] = nodes.map((n) => {
@@ -168,7 +187,12 @@ export function NetworkView({
     nodeSel
       .append('circle')
       .attr('r', (d) => nodeRadius(d))
-      .attr('fill', (d) => (d.isMe ? '#C84B2F' : 'rgba(255,255,255,0.25)'))
+      .attr('fill', (d) => {
+        if (d.isMe) return '#C84B2F';
+        if (d.score >= 1000) return 'rgba(200,75,47,0.6)';
+        if (d.score >= 500) return 'rgba(255,255,255,0.45)';
+        return 'rgba(255,255,255,0.25)';
+      })
       .attr('stroke', '#1A1916')
       .attr('stroke-width', (d) => (d.isMe ? 2 : 1.5));
 
@@ -184,15 +208,24 @@ export function NetworkView({
       .attr('pointer-events', 'none')
       .style('opacity', 0);
 
-    // ----- Hover: show label -------------------------------------------
+    // ----- Hover: show label + tooltip ----------------------------------
     nodeSel
-      .on('mouseenter', function () {
+      .on('mouseenter', function (event: any, d: any) {
         d3.select(this).attr('opacity', 1.0);
         d3.select(this).select('.r-net-label').style('opacity', 1);
+        tooltip.style('opacity', '1').html(`
+          <div style="font-weight:600;font-size:12px">${d.display_name || d.username}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.5)">@${d.username}</div>
+          <div style="font-size:11px;color:#C84B2F;margin-top:4px">Score: ${d.score?.toLocaleString() || 0}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.4)">フォロワー: ${d.followers_count?.toLocaleString() || 0}</div>
+        `);
+        const [mx, my] = d3.pointer(event, containerRef.current);
+        tooltip.style('left', `${mx + 12}px`).style('top', `${my - 10}px`);
       })
       .on('mouseleave', function () {
         d3.select(this).attr('opacity', null);
         d3.select(this).select('.r-net-label').style('opacity', 0);
+        tooltip.style('opacity', '0');
       });
 
     // ----- Click: focus ------------------------------------------------

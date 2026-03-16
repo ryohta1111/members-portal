@@ -13,6 +13,19 @@ interface RankEntry {
 
 const INITIAL_COUNT = 10
 
+function ScoreBar({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
+  const pct = total > 0 ? (value / total) * 100 : 0
+  return (
+    <div className="r-sbar-row">
+      <span className="r-sbar-label">{label}</span>
+      <div className="r-sbar-bg">
+        <div className="r-sbar-fill" style={{ width: `${pct}%`, background: color }} />
+      </div>
+      <span className="r-sbar-val">+{value}</span>
+    </div>
+  )
+}
+
 function ScoreTooltip({ entry }: { entry: RankEntry }) {
   const bars = [
     { label: 'フォロワー', value: entry.follower_score || 0 },
@@ -45,9 +58,6 @@ function ScoreTooltip({ entry }: { entry: RankEntry }) {
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingTop: 6, borderTop: '0.5px solid rgba(255,255,255,0.06)', fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>
-        <span>投稿 {entry.period_posts || 0} · ♥ {entry.period_likes || 0} · ↺ {entry.period_retweets || 0}</span>
-      </div>
     </div>
   )
 }
@@ -79,11 +89,12 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
         {list.map((r, i) => {
           const isMe = myUsername && r.username.toLowerCase() === myUsername.toLowerCase()
           const initials = r.username.slice(0, 2).toUpperCase()
+          const showBreakdown = i < 3 || isMe
           return (
             <div key={r.rank}
               className={`r-rank-row ${isMe ? 'r-me' : ''} ${visible ? 'r-visible' : ''}`}
               style={{ transitionDelay: visible ? `${i * 80}ms` : '0ms', position: 'relative' }}
-              onMouseEnter={() => setHoveredRank(r.rank)}
+              onMouseEnter={() => !showBreakdown && setHoveredRank(r.rank)}
               onMouseLeave={() => setHoveredRank(null)}
             >
               <span className={`r-rank-num ${isMe ? 'r-me' : ''}`}>{r.rank}</span>
@@ -98,7 +109,16 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
                 {isMe && <span className="r-you-badge">YOU</span>}
               </span>
               <span className={`r-rank-score ${isMe ? 'r-me' : ''}`}>{r.score.toLocaleString()}</span>
-              {hoveredRank === r.rank && r.score > 0 && <ScoreTooltip entry={r} />}
+              {hoveredRank === r.rank && !showBreakdown && r.score > 0 && <ScoreTooltip entry={r} />}
+              {showBreakdown && r.score > 0 && (
+                <div className="r-rank-breakdown" style={{ width: '100%' }}>
+                  <ScoreBar label="フォロワー" value={r.follower_score || 0} total={r.score} color="#C84B2F" />
+                  <ScoreBar label="投稿" value={r.post_score || 0} total={r.score} color="rgba(200,75,47,0.7)" />
+                  <ScoreBar label="いいね" value={r.like_score || 0} total={r.score} color="rgba(200,75,47,0.5)" />
+                  <ScoreBar label="RT" value={r.rt_score || 0} total={r.score} color="rgba(200,75,47,0.4)" />
+                  <ScoreBar label="国際" value={r.intl_bonus || 0} total={r.score} color="rgba(255,180,100,0.6)" />
+                </div>
+              )}
             </div>
           )
         })}
