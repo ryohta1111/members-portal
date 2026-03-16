@@ -813,15 +813,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-}
-.r-intro-content .radar-svg {
-  margin-bottom: 24px;
 }
 .r-intro-content .r-term-lines {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   width: fit-content;
-  min-width: 260px;
-  max-width: 80vw;
+  margin: 20px auto 0;
+}
+.r-intro-content .r-term-line {
   text-align: left;
 }
 .r-intro-content .r-access-granted {
