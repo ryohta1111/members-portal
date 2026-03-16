@@ -66,6 +66,7 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
   const [expanded, setExpanded] = useState(false)
   const [visible, setVisible] = useState(false)
   const [hoveredRank, setHoveredRank] = useState<number | null>(null)
+  const [expandedRank, setExpandedRank] = useState<number | null>(null)
   const ref = useRef<HTMLDivElement>(null)
   const list = expanded ? data : data.slice(0, INITIAL_COUNT)
 
@@ -89,12 +90,12 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
         {list.map((r, i) => {
           const isMe = myUsername && r.username.toLowerCase() === myUsername.toLowerCase()
           const initials = r.username.slice(0, 2).toUpperCase()
-          const showBreakdown = i < 3 || isMe
           return (
             <div key={r.rank}
               className={`r-rank-row ${isMe ? 'r-me' : ''} ${visible ? 'r-visible' : ''}`}
-              style={{ transitionDelay: visible ? `${i * 80}ms` : '0ms', position: 'relative' }}
-              onMouseEnter={() => !showBreakdown && setHoveredRank(r.rank)}
+              style={{ transitionDelay: visible ? `${i * 80}ms` : '0ms', position: 'relative', cursor: 'pointer' }}
+              onClick={() => setExpandedRank(expandedRank === r.rank ? null : r.rank)}
+              onMouseEnter={() => setHoveredRank(r.rank)}
               onMouseLeave={() => setHoveredRank(null)}
             >
               <span className={`r-rank-num ${isMe ? 'r-me' : ''}`}>{r.rank}</span>
@@ -109,8 +110,8 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
                 {isMe && <span className="r-you-badge">YOU</span>}
               </span>
               <span className={`r-rank-score ${isMe ? 'r-me' : ''}`}>{r.score.toLocaleString()}</span>
-              {hoveredRank === r.rank && !showBreakdown && r.score > 0 && <ScoreTooltip entry={r} />}
-              {showBreakdown && r.score > 0 && (
+              {hoveredRank === r.rank && expandedRank !== r.rank && r.score > 0 && <ScoreTooltip entry={r} />}
+              {expandedRank === r.rank && r.score > 0 && (
                 <div className="r-rank-breakdown" style={{ width: '100%' }}>
                   <ScoreBar label="フォロワー" value={r.follower_score || 0} total={r.score} color="#C84B2F" />
                   <ScoreBar label="投稿" value={r.post_score || 0} total={r.score} color="rgba(200,75,47,0.7)" />
