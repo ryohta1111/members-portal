@@ -5,13 +5,57 @@ import { useState, useEffect, useRef } from 'react'
 interface RankEntry {
   rank: number; username: string; display_name: string
   profile_image_url: string | null; score: number
+  followers_count?: number; period_posts?: number
+  follower_score?: number; post_score?: number; like_score?: number
+  rt_score?: number; reply_score?: number; intl_bonus?: number
+  period_likes?: number; period_retweets?: number
 }
 
 const INITIAL_COUNT = 10
 
+function ScoreTooltip({ entry }: { entry: RankEntry }) {
+  const bars = [
+    { label: 'フォロワー', value: entry.follower_score || 0 },
+    { label: '投稿', value: entry.post_score || 0 },
+    { label: 'いいね', value: entry.like_score || 0 },
+    { label: 'RT', value: entry.rt_score || 0 },
+    { label: 'リプライ', value: entry.reply_score || 0 },
+    { label: '国際', value: entry.intl_bonus || 0 },
+  ]
+  const max = Math.max(...bars.map(b => b.value), 1)
+
+  return (
+    <div style={{
+      position: 'absolute', right: 0, top: '100%', marginTop: 4, zIndex: 20,
+      background: '#222119', border: '0.5px solid rgba(200,75,47,0.3)',
+      borderRadius: 8, padding: '12px 14px', minWidth: 220,
+      boxShadow: '0 8px 24px rgba(0,0,0,0.4)', pointerEvents: 'none',
+    }}>
+      <div style={{ fontSize: 10, color: 'rgba(200,75,47,0.6)', fontFamily: "'DM Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
+        スコア内訳 — {entry.display_name || entry.username}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+        {bars.map(b => (
+          <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', width: 50, flexShrink: 0 }}>{b.label}</span>
+            <div style={{ flex: 1, height: 3, background: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${(b.value / max) * 100}%`, background: '#C84B2F', borderRadius: 2 }} />
+            </div>
+            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', width: 28, textAlign: 'right', fontFamily: "'DM Mono', monospace" }}>+{b.value}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingTop: 6, borderTop: '0.5px solid rgba(255,255,255,0.06)', fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>
+        <span>投稿 {entry.period_posts || 0} · ♥ {entry.period_likes || 0} · ↺ {entry.period_retweets || 0}</span>
+      </div>
+    </div>
+  )
+}
+
 export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry[]; myUsername: string | null; eventTitle: string }) {
   const [expanded, setExpanded] = useState(false)
   const [visible, setVisible] = useState(false)
+  const [hoveredRank, setHoveredRank] = useState<number | null>(null)
   const ref = useRef<HTMLDivElement>(null)
   const list = expanded ? data : data.slice(0, INITIAL_COUNT)
 
@@ -38,7 +82,9 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
           return (
             <div key={r.rank}
               className={`r-rank-row ${isMe ? 'r-me' : ''} ${visible ? 'r-visible' : ''}`}
-              style={{ transitionDelay: visible ? `${i * 80}ms` : '0ms' }}
+              style={{ transitionDelay: visible ? `${i * 80}ms` : '0ms', position: 'relative' }}
+              onMouseEnter={() => setHoveredRank(r.rank)}
+              onMouseLeave={() => setHoveredRank(null)}
             >
               <span className={`r-rank-num ${isMe ? 'r-me' : ''}`}>{r.rank}</span>
               <div className={`r-rank-avatar ${isMe ? 'r-me' : ''}`}>
@@ -52,6 +98,7 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
                 {isMe && <span className="r-you-badge">YOU</span>}
               </span>
               <span className={`r-rank-score ${isMe ? 'r-me' : ''}`}>{r.score.toLocaleString()}</span>
+              {hoveredRank === r.rank && r.score > 0 && <ScoreTooltip entry={r} />}
             </div>
           )
         })}

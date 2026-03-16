@@ -35,6 +35,14 @@ export async function GET(req: NextRequest) {
         followers_count: u?.followers_count || 0,
         period_posts: s.period_posts || 0,
         score: s.score || 0,
+        follower_score: s.follower_score || 0,
+        post_score: s.post_score || 0,
+        like_score: s.like_score || 0,
+        rt_score: s.rt_score || 0,
+        reply_score: s.reply_score || 0,
+        intl_bonus: s.intl_bonus || 0,
+        period_likes: s.period_likes || 0,
+        period_retweets: s.period_retweets || 0,
       }
     })
     return NextResponse.json(result)
@@ -50,6 +58,14 @@ export async function GET(req: NextRequest) {
       followers_count: u?.followers_count || 0,
       period_posts: s.period_posts || 0,
       score: s.score || 0,
+      follower_score: s.follower_score || 0,
+      post_score: s.post_score || 0,
+      like_score: s.like_score || 0,
+      rt_score: s.rt_score || 0,
+      reply_score: s.reply_score || 0,
+      intl_bonus: s.intl_bonus || 0,
+      period_likes: s.period_likes || 0,
+      period_retweets: s.period_retweets || 0,
     }
   })
 
