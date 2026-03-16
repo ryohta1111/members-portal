@@ -83,8 +83,7 @@ export default function RadarPage() {
         if (meData.score?.rank) setMyRank(meData.score.rank)
         if (meData.score) setMyScore(meData.score)
         if (meData.x_id) setMyXId(meData.x_id)
-        const shown = sessionStorage.getItem(INTRO_KEY)
-        setStep(shown ? 'ready' : 'intro')
+        setStep('intro')
       } else {
         setStep('username')
       }
@@ -170,8 +169,8 @@ export default function RadarPage() {
     return (
       <div className="radar-page">
         <UsernameModal walletAddress={walletAddr}
-          onDone={(u) => { setXUsername(u); setStep(sessionStorage.getItem(INTRO_KEY) ? 'ready' : 'intro') }}
-          onSkip={() => setStep(sessionStorage.getItem(INTRO_KEY) ? 'ready' : 'intro')}
+          onDone={(u) => { setXUsername(u); setStep('intro') }}
+          onSkip={() => setStep('intro')}
         />
       </div>
     )
@@ -181,7 +180,7 @@ export default function RadarPage() {
       <div className="radar-page">
         <RadarIntro onDone={() => {}} />
         {/* Auto-transition after 3.9s */}
-        <AutoTransition onDone={() => { sessionStorage.setItem(INTRO_KEY, '1'); setStep('ready') }} delay={4200} />
+        <AutoTransition onDone={() => { setStep('ready') }} delay={4200} />
       </div>
     )
   }
