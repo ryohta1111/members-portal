@@ -41,6 +41,7 @@ export default function RadarPage() {
   const [step, setStep] = useState<GateStep>('loading')
   const [introFade, setIntroFade] = useState(false)
   const [xUsername, setXUsername] = useState<string | null>(null)
+  const [showUsernameEdit, setShowUsernameEdit] = useState(false)
   const [events, setEvents] = useState<Event[]>([])
   const [activeEvent, setActiveEvent] = useState<Event | null>(null)
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
@@ -169,9 +170,9 @@ export default function RadarPage() {
             <li key={l.href}><Link href={l.href} className={pathname === l.href ? 'active' : ''}>{l.label}</Link></li>
           ))}
         </ul>
-        <div className="r-wallet-chip">
+        <div className="r-wallet-chip" onClick={() => setShowUsernameEdit(true)} title="Xユーザー名を変更">
           <div className="r-wallet-dot" />
-          <span>{xUsername || shortAddr}</span>
+          <span>{xUsername ? `@${xUsername}` : shortAddr}</span>
         </div>
       </nav>
 
@@ -211,6 +212,15 @@ export default function RadarPage() {
         <BuzzFeed data={buzzPosts} myUsername={xUsername} />
 
       </div>
+
+      {/* Username edit modal */}
+      {showUsernameEdit && (
+        <UsernameModal
+          walletAddress={walletAddr}
+          onDone={(u) => { setXUsername(u); setShowUsernameEdit(false) }}
+          onSkip={() => setShowUsernameEdit(false)}
+        />
+      )}
     </div>
   )
 }
