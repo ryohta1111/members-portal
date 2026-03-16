@@ -147,7 +147,20 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
         })
         .on('click', function (_: any, d: any) {
           const a2 = numericToAlpha2[+d.id]
-          if (a2 && countMap.get(a2)) onCountryClick?.(a2)
+          if (!a2 || !countMap.get(a2)) return
+          // Click ripple
+          const centroid = projection(d3.geoCentroid(d))
+          if (centroid) {
+            const ripple = g.append('circle')
+              .attr('cx', centroid[0]).attr('cy', centroid[1])
+              .attr('r', 6).attr('fill', 'none')
+              .attr('stroke', '#C84B2F').attr('stroke-width', 1.5)
+              .attr('opacity', 1)
+            ripple.transition().duration(800).ease(d3.easeCubicOut)
+              .attr('r', 40).attr('opacity', 0)
+              .on('end', () => ripple.remove())
+          }
+          onCountryClick?.(a2)
         })
 
       // Country labels (only for countries with posts)
@@ -178,6 +191,36 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
           const a2 = numericToAlpha2[+d.id]
           return a2 ? (NAMES[a2] || a2) : ''
         })
+
+      // Pulse animation on top 3 countries
+      const sorted = [...data].sort((a, b) => b.count - a.count).slice(0, 3)
+      sorted.forEach(({ country_code }) => {
+        const feat = countries.features.find((f: any) => numericToAlpha2[+f.id] === country_code)
+        if (!feat) return
+        const centroid = projection(d3.geoCentroid(feat))
+        if (!centroid) return
+        const [cx, cy] = centroid;
+
+        [0, 0.7, 1.4].forEach(delay => {
+          const circle = g.append('circle')
+            .attr('cx', cx).attr('cy', cy)
+            .attr('r', 4)
+            .attr('fill', 'none')
+            .attr('stroke', '#C84B2F')
+            .attr('stroke-width', 1)
+            .attr('opacity', 0.6)
+            .attr('pointer-events', 'none')
+
+          function pulse() {
+            circle
+              .attr('r', 4).attr('opacity', 0.6)
+              .transition().delay(delay * 1000).duration(2000).ease(d3.easeCubicOut)
+              .attr('r', 20).attr('opacity', 0)
+              .on('end', pulse)
+          }
+          pulse()
+        })
+      })
     })
   }, [data, view, totalPosts, onCountryClick])
 
