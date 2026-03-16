@@ -8,6 +8,32 @@ interface Event {
   end_at: string
 }
 
+function FlipDigit({ value }: { value: string }) {
+  const [current, setCurrent] = useState(value)
+  const [prev, setPrev] = useState(value)
+  const [flipping, setFlipping] = useState(false)
+
+  useEffect(() => {
+    if (value !== current) {
+      setPrev(current)
+      setFlipping(true)
+      const timer = setTimeout(() => {
+        setCurrent(value)
+        setFlipping(false)
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [value, current])
+
+  return (
+    <div className="r-flip-digit">
+      <div className={`r-flip-inner ${flipping ? 'r-flipping' : ''}`}>
+        <span className="r-flip-front">{flipping ? prev : current}</span>
+      </div>
+    </div>
+  )
+}
+
 export function EventBanner({ event }: { event: Event | null }) {
   const [cd, setCd] = useState({ d: '00', h: '00', m: '00', s: '00' })
 
@@ -36,13 +62,13 @@ export function EventBanner({ event }: { event: Event | null }) {
         <span className="r-event-name">{event.title} — 開催中</span>
       </div>
       <div className="r-countdown">
-        <div className="r-cd-block"><div className="r-cd-num">{cd.d}</div><div className="r-cd-label">日</div></div>
+        <div className="r-cd-block"><FlipDigit value={cd.d} /><div className="r-cd-label">日</div></div>
         <div className="r-cd-sep">:</div>
-        <div className="r-cd-block"><div className="r-cd-num">{cd.h}</div><div className="r-cd-label">時</div></div>
+        <div className="r-cd-block"><FlipDigit value={cd.h} /><div className="r-cd-label">時</div></div>
         <div className="r-cd-sep">:</div>
-        <div className="r-cd-block"><div className="r-cd-num">{cd.m}</div><div className="r-cd-label">分</div></div>
+        <div className="r-cd-block"><FlipDigit value={cd.m} /><div className="r-cd-label">分</div></div>
         <div className="r-cd-sep">:</div>
-        <div className="r-cd-block"><div className="r-cd-num">{cd.s}</div><div className="r-cd-label">秒</div></div>
+        <div className="r-cd-block"><FlipDigit value={cd.s} /><div className="r-cd-label">秒</div></div>
         <span className="r-countdown-text">残り</span>
       </div>
     </div>

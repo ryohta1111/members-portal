@@ -127,7 +127,11 @@ export function NetworkView({
       .force(
         'collide',
         d3.forceCollide<SimNode>().radius((d) => nodeRadius(d) + 8),
-      );
+      )
+      .alphaDecay(0.02)
+      .alphaMin(0.005)
+      .alphaTarget(0.008)
+      .velocityDecay(0.4);
 
     simulationRef.current = simulation;
 

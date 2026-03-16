@@ -807,6 +807,102 @@
   font-family: 'DM Sans', sans-serif;
 }
 
+/* Intro content centering */
+.r-intro-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.r-intro-content .r-term-lines {
+  width: fit-content;
+  min-width: 220px;
+  max-width: 80vw;
+}
+.r-intro-content .r-access-granted {
+  text-align: center;
+}
+
+/* Fade-in animation */
+.r-fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.r-fade-in.r-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.r-delay-1 { transition-delay: 0.1s; }
+.r-delay-2 { transition-delay: 0.2s; }
+.r-delay-3 { transition-delay: 0.3s; }
+.r-delay-4 { transition-delay: 0.4s; }
+.r-delay-5 { transition-delay: 0.5s; }
+
+/* Rank row entrance */
+.r-rank-row {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Rank row hover line */
+.r-rank-row::after {
+  content: '';
+  position: absolute;
+  left: -100%;
+  top: 0; bottom: 0;
+  width: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(200,75,47,0.12) 50%, transparent 100%);
+  transition: left 0s;
+}
+.r-rank-row:hover::after {
+  left: 100%;
+  transition: left 0.4s ease;
+}
+
+/* KPI card hover */
+.r-kpi-card {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.r-kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(200,75,47,0.3);
+}
+
+/* Flip digit */
+.r-flip-digit {
+  perspective: 400px;
+  min-width: 28px;
+  text-align: center;
+}
+.r-flip-inner {
+  position: relative;
+  transform-style: preserve-3d;
+}
+.r-flip-inner.r-flipping {
+  animation: flipDown 0.3s ease-in-out forwards;
+}
+@keyframes flipDown {
+  0%   { transform: rotateX(0deg); }
+  50%  { transform: rotateX(-90deg); }
+  100% { transform: rotateX(0deg); }
+}
+.r-flip-front, .r-flip-back {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .r-fade-in { transition: none; opacity: 1; transform: none; }
+  .r-flip-inner.r-flipping { animation: none; }
+  .r-rank-row::after { display: none; }
+}
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .r-panels-grid { grid-template-columns: 1fr; }
