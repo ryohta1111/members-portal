@@ -814,13 +814,18 @@
   align-items: center;
   gap: 0;
 }
+.r-intro-content .radar-svg {
+  margin-bottom: 24px;
+}
 .r-intro-content .r-term-lines {
   width: fit-content;
-  min-width: 220px;
+  min-width: 260px;
   max-width: 80vw;
+  text-align: left;
 }
 .r-intro-content .r-access-granted {
   text-align: center;
+  width: 100%;
 }
 
 /* Fade-in animation */
