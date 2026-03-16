@@ -35,6 +35,7 @@
   justify-content: center;
   gap: 0;
   transition: opacity 0.4s;
+  padding-bottom: 80px;
 }
 .r-intro.fade-out { opacity: 0; }
 
