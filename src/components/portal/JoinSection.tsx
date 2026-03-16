@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 interface CommunityLink {
   platform: string
@@ -49,6 +49,19 @@ export function JoinSection() {
     ])
   }, [])
 
+  const jgRef = useRef<HTMLDivElement>(null)
+  const [jgVisible, setJgVisible] = useState(false)
+
+  useEffect(() => {
+    const el = jgRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setJgVisible(true); observer.disconnect() }
+    }, { threshold: 0.1 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <div id="join" style={{ background: 'var(--p-surface)' }}>
       <div className="wrap">
@@ -59,7 +72,7 @@ export function JoinSection() {
               <div className="ss">Follow and connect with 035HP.</div>
             </div>
           </div>
-          <div className="jg">
+          <div ref={jgRef} className={`jg p-fade-in ${jgVisible ? 'p-visible' : ''}`}>
             {links.filter(l => l.is_active).map(l => {
               const info = ICONS[l.platform]
               if (!info) return null

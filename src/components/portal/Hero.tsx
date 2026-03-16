@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { MiniChart } from './MiniChart'
+import { useCountUp } from '@/hooks/useCountUp'
 
 const MINT = 'CLD7wRUSwM68q51ayc1wt4Yipc6b2fwLqVm7Rv4Dpump'
 
@@ -25,6 +26,10 @@ function fmtMoney(val: number | null) {
 export function Hero() {
   const [stats, setStats] = useState<Stats | null>(null)
   const { connected } = useWallet()
+  const statsRef = useRef<HTMLDivElement>(null)
+  const [statsVisible, setStatsVisible] = useState(false)
+
+  const holdersCount = useCountUp(stats?.holders || 0, 1200, statsVisible)
 
   useEffect(() => {
     fetch('/api/035hp-stats')
@@ -33,11 +38,21 @@ export function Hero() {
       .catch(() => {})
   }, [])
 
+  useEffect(() => {
+    const el = statsRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setStatsVisible(true); observer.disconnect() }
+    }, { threshold: 0.1 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <div style={{ background: 'var(--p-surface)', borderBottom: '0.5px solid var(--p-border-mid)' }}>
       <div className="wrap">
         <div className="hero">
-          <div>
+          <div className="hero-stagger">
             <div className="ey">Community Portal</div>
             <h1>035HP<br />Community Hub</h1>
             <p>Token holders unlock the full ecosystem — voting, staking, chat, and exclusive games.</p>
@@ -54,28 +69,28 @@ export function Hero() {
               </button>
             </div>
           </div>
-          <div>
+          <div ref={statsRef} className={`p-fade-in ${statsVisible ? 'p-visible' : ''}`}>
             <div className="hstats">
-              <div className="hs">
+              <div className="hs p-delay-1">
                 <div className="hl">Price</div>
                 <div className="hv">{stats?.price || '—'}</div>
                 <div className={`hsub ${stats?.priceChange24h != null && stats.priceChange24h >= 0 ? 'up2' : 'dn2'}`}>
                   {stats?.priceChange24h != null ? `${stats.priceChange24h >= 0 ? '+' : ''}${stats.priceChange24h.toFixed(1)}% (24h)` : '—'}
                 </div>
               </div>
-              <div className="hs">
+              <div className="hs p-delay-2">
                 <div className="hl">Market Cap</div>
                 <div className="hv">{fmtMoney(stats?.marketCap ?? null)}</div>
                 <div className="hsub" style={{ color: 'var(--p-sub)' }}>Fully Diluted</div>
               </div>
-              <div className="hs">
+              <div className="hs p-delay-3">
                 <div className="hl">Vol 24h</div>
                 <div className="hv">{fmtMoney(stats?.volume24h ?? null)}</div>
                 <div className="hsub" style={{ color: 'var(--p-sub)' }}>—</div>
               </div>
-              <div className="hs">
+              <div className="hs p-delay-4">
                 <div className="hl">Holders</div>
-                <div className="hv">{stats?.holders?.toLocaleString() || '—'}</div>
+                <div className="hv" suppressHydrationWarning>{statsVisible ? holdersCount.toLocaleString() : '—'}</div>
                 <div className="hsub" style={{ color: 'var(--p-sub)' }}>Wallets</div>
               </div>
             </div>

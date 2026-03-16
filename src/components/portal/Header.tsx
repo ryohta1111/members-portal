@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
@@ -14,9 +15,16 @@ const NAV_ITEMS = [
 
 export function Header() {
   const pathname = usePathname()
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    function onScroll() { setScrolled(window.scrollY > 50) }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <div className="p-hdr">
+    <div className={`p-hdr ${scrolled ? 'scrolled' : ''}`}>
       <Link href="/" className="p-logo" style={{ textDecoration: 'none', color: 'inherit' }}>035HP</Link>
       <nav className="p-nav">
         {NAV_ITEMS.map(item => (

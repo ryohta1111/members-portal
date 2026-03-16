@@ -1,7 +1,7 @@
 'use client'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
 const TOKEN_2022_PROGRAM_ID = 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'
@@ -149,6 +149,19 @@ export function FeatureCards() {
     return 'Restricted'
   }
 
+  const fgRef = useRef<HTMLDivElement>(null)
+  const [fgVisible, setFgVisible] = useState(false)
+
+  useEffect(() => {
+    const el = fgRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setFgVisible(true); observer.disconnect() }
+    }, { threshold: 0.1 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <div id="features" style={{ background: 'var(--p-bg)' }}>
       <div className="wrap">
@@ -159,11 +172,11 @@ export function FeatureCards() {
               <div className="ss">Core functions for 035HP holders.</div>
             </div>
           </div>
-          <div className="fg">
-            {FEATURES.map(f => (
+          <div ref={fgRef} className={`fg p-fade-in ${fgVisible ? 'p-visible' : ''}`}>
+            {FEATURES.map((f, i) => (
               <div
                 key={f.id}
-                className={`fc ${!connected || hasToken === false ? 'locked' : ''}`}
+                className={`fc ${!connected || hasToken === false ? 'locked' : ''} p-delay-${i + 1}`}
                 onClick={() => handleClick(f)}
               >
                 <div className="lk">{getBadgeText()}</div>

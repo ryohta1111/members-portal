@@ -1,4 +1,21 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+
 export function HowItWorks() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
+    }, { threshold: 0.1 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   const steps = [
     { n: 1, title: 'Connect Wallet', desc: 'Connect Phantom to get started.' },
     { n: 2, title: 'Hold 035HP', desc: 'Hold any of the 16 eligible tokens.' },
@@ -16,9 +33,9 @@ export function HowItWorks() {
               <div className="ss">Get started in four steps.</div>
             </div>
           </div>
-          <div className="steps">
-            {steps.map(s => (
-              <div key={s.n} className="step">
+          <div ref={ref} className={`steps p-fade-in ${visible ? 'p-visible' : ''}`}>
+            {steps.map((s, i) => (
+              <div key={s.n} className={`step p-delay-${i + 1}`}>
                 <div className="sn">{s.n}</div>
                 <div className="stit">{s.title}</div>
                 <div className="sd">{s.desc}</div>
