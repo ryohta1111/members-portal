@@ -96,6 +96,36 @@ export default function RadarPage() {
     else { setStep('connect') }
   }, [connected, publicKey, checkBalance])
 
+  // Handle X OAuth callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('code')
+    const state = params.get('state')
+    if (code && state) {
+      const codeVerifier = sessionStorage.getItem('x_oauth_code_verifier')
+      const oauthWallet = sessionStorage.getItem('x_oauth_wallet')
+      if (codeVerifier && oauthWallet) {
+        fetch('/api/radar/auth/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, code_verifier: codeVerifier, wallet: oauthWallet }),
+        })
+          .then(r => r.json())
+          .then(d => {
+            if (d.ok && d.username) {
+              setXUsername(d.username)
+              if (d.x_id) setMyXId(d.x_id)
+              sessionStorage.removeItem('x_oauth_code_verifier')
+              sessionStorage.removeItem('x_oauth_wallet')
+            }
+          })
+          .catch(() => {})
+        // Clean URL
+        window.history.replaceState({}, '', '/radar')
+      }
+    }
+  }, [])
+
   useEffect(() => {
     fetch('/api/radar/events').then(r => r.json()).then(d => {
       setEvents(d.events || [])

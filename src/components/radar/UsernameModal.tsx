@@ -9,25 +9,33 @@ interface Props {
 }
 
 export function UsernameModal({ walletAddress, onDone, onSkip }: Props) {
-  const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleSubmit() {
-    const clean = username.replace(/^@/, '').trim()
-    if (!clean) { setError('\u30E6\u30FC\u30B6\u30FC\u540D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044'); return }
+  async function handleXLogin() {
     setLoading(true)
     setError('')
-    const res = await fetch('/api/radar/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ wallet_address: walletAddress, x_username: clean }),
-    })
-    if (res.ok) { onDone(clean) } else {
+    try {
+      // Get auth URL and code verifier
+      const res = await fetch(`/api/radar/auth?wallet=${walletAddress}`)
       const data = await res.json()
-      setError(data.error || '\u767B\u9332\u306B\u5931\u6557\u3057\u307E\u3057\u305F')
+
+      if (!data.authUrl) {
+        setError('認証URLの取得に失敗しました')
+        setLoading(false)
+        return
+      }
+
+      // Store code_verifier and wallet in sessionStorage
+      sessionStorage.setItem('x_oauth_code_verifier', data.codeVerifier)
+      sessionStorage.setItem('x_oauth_wallet', walletAddress)
+
+      // Redirect to X authorization page
+      window.location.href = data.authUrl
+    } catch {
+      setError('エラーが発生しました')
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
@@ -35,26 +43,18 @@ export function UsernameModal({ walletAddress, onDone, onSkip }: Props) {
       <div className="r-modal">
         <div className="r-modal-title">CT Radarにようこそ</div>
         <div className="r-modal-desc">
-          あなたのXアカウントを登録してください。コミュニティ内でのあなたの影響が可視化されます。
+          Xアカウントでログインしてください。コミュニティ内でのあなたの影響が可視化されます。
         </div>
-        <div className="r-modal-input-wrap">
-          <span className="r-modal-at">@</span>
-          <input
-            className="r-modal-input"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            placeholder="\u30E6\u30FC\u30B6\u30FC\u540D\u3092\u5165\u529B"
-            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-          />
-        </div>
-        {error && <div style={{ color: '#ef4444', fontSize: 11, marginBottom: 8 }}>{error}</div>}
+        {error && <div style={{ color: '#ef4444', fontSize: 11, marginBottom: 12 }}>{error}</div>}
         <div className="r-modal-buttons">
-          <button className="radar-btn-primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? '\u767B\u9332\u4E2D...' : '\u767B\u9332\u3059\u308B'}
+          <button className="radar-btn-primary" onClick={handleXLogin} disabled={loading}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16 }}>𝕏</span>
+            {loading ? '接続中...' : 'Xでログイン'}
           </button>
           <button className="radar-btn-secondary" onClick={onSkip}>あとで</button>
         </div>
-        <div className="r-modal-note">※プロフィール設定で後から変更可能</div>
+        <div className="r-modal-note">※Xの認証ページに移動します。投稿権限は要求しません。</div>
       </div>
     </div>
   )
