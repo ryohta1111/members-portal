@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 interface TokenPrice {
   ticker: string
@@ -11,11 +11,21 @@ interface TokenPrice {
 export function Ticker() {
   const [stats, setStats] = useState<{ price: string; change: number } | null>(null)
   const [tokens, setTokens] = useState<TokenPrice[]>([])
+  const prevPriceRef = useRef<string>('')
+  const [priceFlash, setPriceFlash] = useState(false)
 
   useEffect(() => {
     fetch('/api/035hp-stats')
       .then(r => r.json())
-      .then(d => setStats({ price: d.price || '$0.00', change: d.priceChange24h || 0 }))
+      .then(d => {
+        const newPrice = d.price || '$0.00'
+        if (prevPriceRef.current && prevPriceRef.current !== newPrice) {
+          setPriceFlash(true)
+          setTimeout(() => setPriceFlash(false), 600)
+        }
+        prevPriceRef.current = newPrice
+        setStats({ price: newPrice, change: d.priceChange24h || 0 })
+      })
       .catch(() => {})
 
     fetch('/api/tokens')
@@ -39,7 +49,7 @@ export function Ticker() {
     <div className="ticker">
       <div className="tb">
         <span style={{ opacity: 0.5, fontSize: 9, fontWeight: 700, letterSpacing: '0.5px' }}>035HP</span>
-        <span style={{ fontFamily: "'DM Mono', monospace" }}>{stats?.price || '—'}</span>
+        <span className={priceFlash ? 'price-flash' : ''} style={{ fontFamily: "'DM Mono', monospace" }}>{stats?.price || '—'}</span>
         {stats && (
           <span className={stats.change >= 0 ? 'up' : 'dn'}>
             {stats.change >= 0 ? '+' : ''}{stats.change?.toFixed(1)}%

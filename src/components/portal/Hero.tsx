@@ -49,8 +49,22 @@ export function Hero() {
   }, [])
 
   return (
-    <div style={{ background: 'var(--p-surface)', borderBottom: '0.5px solid var(--p-border-mid)' }}>
-      <div className="wrap">
+    <div style={{ background: 'var(--p-surface)', borderBottom: '0.5px solid var(--p-border-mid)', position: 'relative', overflow: 'hidden' }}>
+      <div className="hero-gradient" />
+      <div className="hero-grid" />
+      <div className="hero-particles">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div key={i} className="hero-particle" style={{
+            left: `${Math.random() * 100}%`,
+            bottom: `${-20 - Math.random() * 40}px`,
+            animationDuration: `${6 + Math.random() * 8}s`,
+            animationDelay: `${Math.random() * 6}s`,
+            width: `${2 + Math.random() * 2}px`,
+            height: `${2 + Math.random() * 2}px`,
+          }} />
+        ))}
+      </div>
+      <div className="wrap" style={{ position: 'relative', zIndex: 1 }}>
         <div className="hero">
           <div className="hero-stagger">
             <div className="ey">Community Portal</div>
