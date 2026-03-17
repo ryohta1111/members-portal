@@ -534,38 +534,39 @@
 .r-country-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
-  padding: 8px 10px;
+  gap: 3px;
+  padding: 6px;
 }
 .r-country-item {
   background: rgba(255,255,255,0.04);
-  border-radius: 6px;
-  padding: 6px 8px;
+  border-radius: 4px;
+  padding: 5px 7px;
 }
-.r-country-flag { font-size: 13px; margin-bottom: 1px; }
+.r-country-flag { font-size: 12px; margin-bottom: 0; }
 .r-country-name {
   font-size: 9px;
   color: var(--radar-muted);
   margin-bottom: 0;
+  line-height: 1.2;
 }
 .r-country-count {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #fff;
   font-family: 'DM Mono', monospace;
   line-height: 1;
 }
 .r-country-label {
-  font-size: 9px;
+  font-size: 8px;
   color: var(--radar-hint);
-  margin-top: 2px;
+  margin-top: 1px;
   font-family: 'DM Mono', monospace;
 }
 .r-country-bar {
   height: 2px;
   background: rgba(255,255,255,0.08);
   border-radius: 1px;
-  margin-top: 3px;
+  margin-top: 2px;
   overflow: hidden;
 }
 .r-country-bar-fill {
