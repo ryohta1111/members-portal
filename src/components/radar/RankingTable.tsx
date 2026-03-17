@@ -11,7 +11,7 @@ interface RankEntry {
   period_likes?: number; period_retweets?: number
 }
 
-const INITIAL_COUNT = 10
+const INITIAL_COUNT = 7
 
 function ScoreBar({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
   const pct = total > 0 ? (value / total) * 100 : 0
