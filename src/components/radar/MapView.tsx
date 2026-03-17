@@ -60,6 +60,18 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
 
     svg.append('rect').attr('width', width).attr('height', height).attr('fill', '#161512')
 
+    // Vignette overlay for depth
+    const vignette = svg.append('radialGradient')
+      .attr('id', 'map-vignette')
+      .attr('cx', '50%').attr('cy', '50%').attr('r', '50%')
+    vignette.append('stop').attr('offset', '60%').attr('stop-color', 'transparent')
+    vignette.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(0,0,0,0.4)')
+
+    svg.append('rect')
+      .attr('width', width).attr('height', height)
+      .attr('fill', 'url(#map-vignette)')
+      .attr('pointer-events', 'none')
+
     const projection = d3.geoNaturalEarth1()
       .center(view === 'asia' ? [120, 30] : [0, 20])
       .scale(view === 'asia' ? width * 0.8 : width / 6)
@@ -107,8 +119,8 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
           if (!a2) return '#1E1D1A'
           return colorScale(countMap.get(a2) || 0)
         })
-        .attr('stroke', 'rgba(255,255,255,0.06)')
-        .attr('stroke-width', 0.3)
+        .attr('stroke', 'rgba(255,255,255,0.12)')
+        .attr('stroke-width', 0.5)
         .style('cursor', (d: any) => {
           const a2 = numericToAlpha2[+d.id]
           return a2 && countMap.get(a2) ? 'pointer' : 'default'
@@ -143,7 +155,7 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
         })
         .on('mouseout', function () {
           tooltip.style('opacity', '0')
-          d3.select(this).attr('stroke', 'rgba(255,255,255,0.06)').attr('stroke-width', 0.3)
+          d3.select(this).attr('stroke', 'rgba(255,255,255,0.12)').attr('stroke-width', 0.5)
         })
         .on('click', function (_: any, d: any) {
           const a2 = numericToAlpha2[+d.id]
@@ -223,6 +235,7 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
       })
 
       // Flow lines from Japan to other countries
+      const flowColors = ['#C84B2F', '#E8763B', '#D4A347', '#C75B8A', '#E85D45', '#CF6E3A', '#D99040', '#C84B6F']
       const jpFeature = countries.features.find((f: any) => numericToAlpha2[+f.id] === 'JP')
       if (jpFeature) {
         const jpCenter = projection(d3.geoCentroid(jpFeature))
@@ -242,21 +255,22 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
             const cp: [number, number] = [(src[0] + dst[0]) / 2, Math.min(src[1], dst[1]) - 40]
             const pathD = `M${src[0]},${src[1]} Q${cp[0]},${cp[1]} ${dst[0]},${dst[1]}`
             const opacity = Math.min(0.15 + count / 300, 0.6)
-            const strokeWidth = Math.min(0.5 + count / 200, 2)
+            const strokeWidth = Math.min(1.5 + count / 100, 3.5)
+            const flowColor = flowColors[idx % flowColors.length]
 
             // Base line
             g.append('path')
               .attr('d', pathD)
               .attr('fill', 'none')
               .attr('stroke', `rgba(200,75,47,${opacity * 0.5})`)
-              .attr('stroke-width', 0.4)
+              .attr('stroke-width', 1.0)
               .attr('pointer-events', 'none')
 
             // Animated line
             const animPath = g.append('path')
               .attr('d', pathD)
               .attr('fill', 'none')
-              .attr('stroke', '#C84B2F')
+              .attr('stroke', flowColor)
               .attr('stroke-width', strokeWidth)
               .attr('stroke-linecap', 'round')
               .attr('opacity', opacity)
@@ -280,7 +294,7 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
             // Glow at destination
             const glow = g.append('circle')
               .attr('cx', dst[0]).attr('cy', dst[1])
-              .attr('r', 3).attr('fill', '#C84B2F').attr('opacity', 0)
+              .attr('r', 3).attr('fill', flowColor).attr('opacity', 0)
               .attr('pointer-events', 'none')
 
             function glowLoop() {
@@ -292,6 +306,26 @@ export function MapView({ data, onCountryClick }: MapViewProps) {
                 .on('end', glowLoop)
             }
             glowLoop()
+          })
+
+          // Sonar pulse rings from Japan
+          ;[0, 1.5, 3].forEach(delay => {
+            const sonar = g.append('circle')
+              .attr('cx', jpCenter[0]).attr('cy', jpCenter[1])
+              .attr('r', 10)
+              .attr('fill', 'none')
+              .attr('stroke', 'rgba(200,75,47,0.2)')
+              .attr('stroke-width', 0.5)
+              .attr('pointer-events', 'none')
+
+            function sonarPulse() {
+              sonar
+                .attr('r', 10).attr('opacity', 0.4).attr('stroke-width', 0.8)
+                .transition().delay(delay * 1000).duration(3000).ease(d3.easeCubicOut)
+                .attr('r', 120).attr('opacity', 0).attr('stroke-width', 0.2)
+                .on('end', sonarPulse)
+            }
+            sonarPulse()
           })
         }
       }

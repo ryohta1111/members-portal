@@ -95,6 +95,20 @@ export function NetworkView({
     svg.selectAll('*').remove();
     svg.attr('width', width).attr('height', height);
 
+    // Dot grid pattern background
+    const defs = svg.append('defs')
+    const pattern = defs.append('pattern')
+      .attr('id', 'net-dot-grid')
+      .attr('width', 20).attr('height', 20)
+      .attr('patternUnits', 'userSpaceOnUse')
+    pattern.append('circle')
+      .attr('cx', 10).attr('cy', 10).attr('r', 0.5)
+      .attr('fill', 'rgba(255,255,255,0.05)')
+
+    svg.insert('rect', ':first-child')
+      .attr('width', width).attr('height', height)
+      .attr('fill', 'url(#net-dot-grid)')
+
     // Remove old tooltip
     d3.select(containerRef.current).selectAll('.r-net-tooltip').remove();
 
@@ -172,7 +186,8 @@ export function NetworkView({
         }
         return 'rgba(255,255,255,0.08)';
       })
-      .attr('stroke-width', (d) => edgeWidth(d.strength));
+      .attr('stroke-width', (d) => edgeWidth(d.strength))
+      .style('filter', 'drop-shadow(0 0 2px rgba(200,75,47,0.15))');
 
     // ----- Draw nodes --------------------------------------------------
     const nodeGroup = svg.append('g').attr('class', 'nodes');
@@ -195,6 +210,21 @@ export function NetworkView({
       })
       .attr('stroke', '#1A1916')
       .attr('stroke-width', (d) => (d.isMe ? 2 : 1.5));
+
+    // Pulse animation for top nodes
+    nodeSel.filter((d: any) => d.score >= 800 || d.isMe).each(function() {
+      const circle = d3.select(this).select('circle')
+      const originalR = parseFloat(circle.attr('r'))
+
+      function pulse() {
+        circle.transition().duration(1500).ease(d3.easeSinInOut)
+          .attr('r', originalR * 1.15)
+          .transition().duration(1500).ease(d3.easeSinInOut)
+          .attr('r', originalR)
+          .on('end', pulse)
+      }
+      pulse()
+    })
 
     // Label (hidden by default, shown on hover)
     nodeSel
