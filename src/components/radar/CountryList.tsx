@@ -31,12 +31,18 @@ export function CountryList({ data }: { data: CountryData[] }) {
           const pct = total > 0 ? ((c.count / total) * 100).toFixed(1) : '0'
           return (
             <div key={c.country_code} className="r-country-item">
-              <div className="r-country-flag">{FLAGS[c.country_code] || '🌍'}</div>
-              <div className="r-country-name">{NAMES[c.country_code] || c.country_code}</div>
-              <div className="r-country-count">{c.count.toLocaleString()}</div>
-              <div className="r-country-label">投稿 · {pct}%</div>
-              <div className="r-country-bar">
-                <div className="r-country-bar-fill" style={{ width: `${(c.count / max) * 100}%` }} />
+              <div className="r-country-top">
+                <div className="r-country-left">
+                  <span className="r-country-flag">{FLAGS[c.country_code] || '🌍'}</span>
+                  <span className="r-country-name">{NAMES[c.country_code] || c.country_code}</span>
+                </div>
+                <div className="r-country-count">{c.count.toLocaleString()}</div>
+              </div>
+              <div className="r-country-bottom">
+                <span className="r-country-label">投稿 · {pct}%</span>
+                <div className="r-country-bar">
+                  <div className="r-country-bar-fill" style={{ width: `${(c.count / max) * 100}%` }} />
+                </div>
               </div>
             </div>
           )

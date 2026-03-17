@@ -540,36 +540,49 @@
 .r-country-item {
   background: rgba(255,255,255,0.04);
   border-radius: 6px;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  padding: 10px 12px;
 }
-.r-country-flag { font-size: 26px; margin-bottom: 4px; }
+.r-country-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.r-country-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.r-country-flag { font-size: 22px; flex-shrink: 0; }
 .r-country-name {
   font-size: 13px;
   color: var(--radar-muted);
-  margin-bottom: 2px;
   line-height: 1.2;
 }
 .r-country-count {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   color: #fff;
   font-family: 'DM Mono', monospace;
-  line-height: 1.1;
+  line-height: 1;
+}
+.r-country-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
 }
 .r-country-label {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--radar-hint);
-  margin-top: 3px;
   font-family: 'DM Mono', monospace;
 }
 .r-country-bar {
+  flex: 1;
   height: 3px;
   background: rgba(255,255,255,0.08);
   border-radius: 2px;
-  margin-top: 6px;
+  margin-left: 8px;
   overflow: hidden;
 }
 .r-country-bar-fill {
