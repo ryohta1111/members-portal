@@ -1,8 +1,2 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/radar-collect",
-      "schedule": "0 * * * *"
-    }
-  ]
 }
