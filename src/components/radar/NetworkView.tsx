@@ -139,6 +139,17 @@ export function NetworkView({ nodes, links, myXId, onNodeClick, highlightNodeId 
       .on('zoom', (event) => zoomG.attr('transform', event.transform))
     svg.call(zoom)
 
+    // Default 1.5x zoom centered
+    const initialTransform = d3.zoomIdentity
+      .translate(width / 2, height / 2)
+      .scale(1.5)
+      .translate(-width / 2, -height / 2)
+    svg.call(zoom.transform, initialTransform)
+
+    // Store zoom for external reset
+    ;(svgEl as any).__zoom_ref = zoom
+    ;(svgEl as any).__zoom_g = zoomG
+
     // Draw curved edges
     const linkSel = zoomG.append('g').attr('class', 'links')
       .selectAll<SVGPathElement, SimLink>('path')
@@ -314,7 +325,23 @@ export function NetworkView({ nodes, links, myXId, onNodeClick, highlightNodeId 
     <div className="r-panel">
       <div className="r-panel-header">
         <span className="r-panel-title">ネットワーク図</span>
-        <span className="r-panel-sub">ホバーで関係表示 — ドラッグで移動 — スクロールでズーム</span>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <button className="r-map-btn" onClick={() => {
+            const el = svgRef.current as any
+            if (el?.__zoom_ref && el?.__zoom_g) {
+              d3.select(el).transition().duration(500).call(el.__zoom_ref.transform, d3.zoomIdentity)
+            }
+          }}>全体表示</button>
+          <button className="r-map-btn r-map-btn--active" onClick={() => {
+            const el = svgRef.current as any
+            if (el?.__zoom_ref) {
+              const w = containerRef.current?.clientWidth || 600
+              const h = containerRef.current?.clientHeight || 300
+              const t = d3.zoomIdentity.translate(w / 2, h / 2).scale(1.5).translate(-w / 2, -h / 2)
+              d3.select(el).transition().duration(500).call(el.__zoom_ref.transform, t)
+            }
+          }}>中心</button>
+        </div>
       </div>
       <div className="r-network-container" ref={containerRef} style={{ position: 'relative' }}>
         <svg ref={svgRef} style={{ display: 'block' }} />

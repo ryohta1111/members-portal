@@ -524,8 +524,7 @@
 /* NETWORK */
 .r-network-container {
   background: var(--radar-surface2);
-  flex: 1;
-  min-height: 300px;
+  height: 300px;
   position: relative;
   overflow: hidden;
 }
@@ -578,6 +577,8 @@
 /* RANKING */
 .r-ranking-list {
   padding: 8px 14px;
+  max-height: 260px;
+  overflow-y: auto;
 }
 .r-rank-row {
   display: flex;
