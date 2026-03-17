@@ -533,39 +533,43 @@
 .r-country-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
-  padding: 6px;
+  gap: 6px;
+  padding: 8px;
+  flex: 1;
 }
 .r-country-item {
   background: rgba(255,255,255,0.04);
-  border-radius: 4px;
-  padding: 6px 8px;
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-.r-country-flag { font-size: 16px; margin-bottom: 1px; }
+.r-country-flag { font-size: 26px; margin-bottom: 4px; }
 .r-country-name {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--radar-muted);
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   line-height: 1.2;
 }
 .r-country-count {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
   color: #fff;
   font-family: 'DM Mono', monospace;
   line-height: 1.1;
 }
 .r-country-label {
-  font-size: 9px;
+  font-size: 11px;
   color: var(--radar-hint);
-  margin-top: 2px;
+  margin-top: 3px;
   font-family: 'DM Mono', monospace;
 }
 .r-country-bar {
-  height: 2px;
+  height: 3px;
   background: rgba(255,255,255,0.08);
-  border-radius: 1px;
-  margin-top: 3px;
+  border-radius: 2px;
+  margin-top: 6px;
   overflow: hidden;
 }
 .r-country-bar-fill {
