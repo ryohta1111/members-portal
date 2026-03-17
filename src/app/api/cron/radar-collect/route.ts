@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getRadarSupabaseAdmin } from '@/lib/radarSupabase'
 
+export const maxDuration = 60
+
 // Location text to country code mapping
 const LOCATION_MAP: Record<string, string> = {
   '日本': 'JP', 'japan': 'JP', 'tokyo': 'JP', '東京': 'JP', 'osaka': 'JP', '大阪': 'JP',
