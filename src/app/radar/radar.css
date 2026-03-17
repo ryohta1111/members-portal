@@ -594,7 +594,7 @@
 /* RANKING */
 .r-ranking-list {
   padding: 8px 12px;
-  max-height: 260px;
+  flex: 1;
   overflow-y: auto;
 }
 .r-rank-row {
