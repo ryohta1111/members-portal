@@ -43,44 +43,59 @@ export async function GET(req: NextRequest) {
     }
   })
 
-  // Build links: hub-and-spoke model
-  // Top 5 users are "hubs" — other users connect to 1-2 random hubs
-  // This creates a realistic network structure instead of full mesh
-  const links: Array<{ source: string; target: string; strength: number }> = []
-  const hubCount = Math.min(5, nodes.length)
-  const hubs = nodes.slice(0, hubCount)
-  const others = nodes.slice(hubCount)
+  // Build links from real connection data
+  let connQuery = db.from('radar_connections').select('source_x_id, target_x_id, connection_type')
+  if (eventId) connQuery = connQuery.eq('event_id', eventId)
+  const { data: connections } = await connQuery
 
-  // Connect hubs to each other
-  for (let i = 0; i < hubs.length; i++) {
-    for (let j = i + 1; j < hubs.length; j++) {
-      links.push({
-        source: hubs[i].id,
-        target: hubs[j].id,
-        strength: Math.min(hubs[i].score, hubs[j].score) / 100,
+  const linkMap = new Map<string, { source: string; target: string; strength: number; types: Set<string> }>()
+  const nodeIdSet = new Set(nodes.map(n => n.id))
+
+  for (const conn of connections || []) {
+    // Only include connections between nodes we're showing
+    if (!nodeIdSet.has(conn.source_x_id) || !nodeIdSet.has(conn.target_x_id)) continue
+
+    const key = [conn.source_x_id, conn.target_x_id].sort().join('-')
+    const existing = linkMap.get(key)
+    if (existing) {
+      existing.strength += 1
+      existing.types.add(conn.connection_type)
+    } else {
+      linkMap.set(key, {
+        source: conn.source_x_id,
+        target: conn.target_x_id,
+        strength: 1,
+        types: new Set([conn.connection_type]),
       })
     }
   }
 
-  // Connect each non-hub to 1-2 hubs based on score proximity
-  for (const node of others) {
-    // Connect to the closest hub by score
-    const idx = nodes.indexOf(node)
-    const hubIndex = Math.floor((idx - hubCount) % hubCount)
-    links.push({
-      source: node.id,
-      target: hubs[hubIndex].id,
-      strength: node.score / 200,
-    })
+  let links = [...linkMap.values()].map(l => ({
+    source: l.source,
+    target: l.target,
+    strength: l.strength,
+    type: l.types.has('replied_to') ? 'reply' : l.types.has('quoted') ? 'quote' : 'retweet',
+  }))
 
-    // 50% chance to connect to a second hub
-    if (node.score > 50 && hubCount > 1) {
-      const hub2 = (hubIndex + 1) % hubCount
-      links.push({
-        source: node.id,
-        target: hubs[hub2].id,
-        strength: node.score / 400,
-      })
+  // If no real connections yet, fallback to hub-and-spoke
+  if (links.length === 0) {
+    const hubCount = Math.min(5, nodes.length)
+    const hubs = nodes.slice(0, hubCount)
+    const others = nodes.slice(hubCount)
+
+    for (let i = 0; i < hubs.length; i++) {
+      for (let j = i + 1; j < hubs.length; j++) {
+        links.push({ source: hubs[i].id, target: hubs[j].id, strength: 3, type: 'hub' })
+      }
+    }
+    for (const node of others) {
+      const idx = nodes.indexOf(node)
+      const hubIndex = Math.floor((idx - hubCount) % hubCount)
+      links.push({ source: node.id, target: hubs[hubIndex].id, strength: 1, type: 'hub' })
+      if (node.score > 50 && hubCount > 1) {
+        const hub2 = (hubIndex + 1) % hubCount
+        links.push({ source: node.id, target: hubs[hub2].id, strength: 0.5, type: 'hub' })
+      }
     }
   }
 

@@ -54,6 +54,7 @@ export default function RadarPage() {
   const [myXId, setMyXId] = useState<string | null>(null)
   const [myRank, setMyRank] = useState<number | null>(null)
   const [myScore, setMyScore] = useState<any>(null)
+  const [highlightNodeId, setHighlightNodeId] = useState<string | null>(null)
 
   const walletAddr = publicKey?.toString() || ''
   const shortAddr = walletAddr ? `${walletAddr.slice(0, 4)}...${walletAddr.slice(-4)}` : ''
@@ -232,9 +233,12 @@ export default function RadarPage() {
 
         {/* ネットワーク図 */}
         <div id="network" className="r-panels-grid">
-          <NetworkView nodes={networkNodes} links={networkLinks} myXId={myXId || undefined} />
+          <NetworkView nodes={networkNodes} links={networkLinks} myXId={myXId || undefined} highlightNodeId={highlightNodeId} onNodeClick={(node) => {
+            const el = document.getElementById(`rank-${node.id}`)
+            if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('r-rank-highlight'); setTimeout(() => el.classList.remove('r-rank-highlight'), 2000) }
+          }} />
           <div id="ranking">
-            <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} />
+            <RankingTable data={ranking} myUsername={xUsername} eventTitle={selectedEvent?.title || '全期間'} onRowHover={setHighlightNodeId} />
           </div>
         </div>
 

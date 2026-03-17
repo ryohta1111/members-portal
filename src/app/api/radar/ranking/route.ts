@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
       const u = userMap.get(s.x_id)
       return {
         rank: i + 1,
+        x_id: s.x_id,
         username: u?.username || 'unknown',
         display_name: u?.display_name || '',
         profile_image_url: u?.profile_image_url || null,
@@ -52,6 +53,7 @@ export async function GET(req: NextRequest) {
     const u = s.radar_x_users
     return {
       rank: i + 1,
+      x_id: s.x_id,
       username: u?.username || 'unknown',
       display_name: u?.display_name || '',
       profile_image_url: u?.profile_image_url || null,

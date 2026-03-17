@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 
 interface RankEntry {
-  rank: number; username: string; display_name: string
+  rank: number; x_id?: string; username: string; display_name: string
   profile_image_url: string | null; score: number
   followers_count?: number; period_posts?: number
   follower_score?: number; post_score?: number; like_score?: number
@@ -62,7 +62,7 @@ function ScoreTooltip({ entry }: { entry: RankEntry }) {
   )
 }
 
-export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry[]; myUsername: string | null; eventTitle: string }) {
+export function RankingTable({ data, myUsername, eventTitle, onRowHover }: { data: RankEntry[]; myUsername: string | null; eventTitle: string; onRowHover?: (xId: string | null) => void }) {
   const [expanded, setExpanded] = useState(false)
   const [visible, setVisible] = useState(false)
   const [hoveredRank, setHoveredRank] = useState<number | null>(null)
@@ -92,11 +92,12 @@ export function RankingTable({ data, myUsername, eventTitle }: { data: RankEntry
           const initials = r.username.slice(0, 2).toUpperCase()
           return (
             <div key={r.rank}
+              id={r.x_id ? `rank-${r.x_id}` : undefined}
               className={`r-rank-row ${isMe ? 'r-me' : ''} ${visible ? 'r-visible' : ''}`}
               style={{ transitionDelay: visible ? `${i * 80}ms` : '0ms', position: 'relative', cursor: 'pointer' }}
               onClick={() => setExpandedRank(expandedRank === r.rank ? null : r.rank)}
-              onMouseEnter={() => setHoveredRank(r.rank)}
-              onMouseLeave={() => setHoveredRank(null)}
+              onMouseEnter={() => { setHoveredRank(r.rank); onRowHover?.(r.x_id || null) }}
+              onMouseLeave={() => { setHoveredRank(null); onRowHover?.(null) }}
             >
               <span className={`r-rank-num ${isMe ? 'r-me' : ''}`}>{r.rank}</span>
               <div className={`r-rank-avatar ${isMe ? 'r-me' : ''}`}>

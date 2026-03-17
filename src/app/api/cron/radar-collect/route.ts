@@ -118,7 +118,7 @@ export async function GET(req: NextRequest) {
       // Paginate through results
       do {
         const tokenParam: string = nextToken ? `&next_token=${nextToken}` : ''
-        const url = `https://api.x.com/2/tweets/search/recent?query=${encodeURIComponent(hashtags.join(' OR '))}&tweet.fields=public_metrics,author_id,created_at,lang,geo&expansions=author_id&user.fields=public_metrics,location,profile_image_url&max_results=100&start_time=${startTime}${tokenParam}`
+        const url = `https://api.x.com/2/tweets/search/recent?query=${encodeURIComponent(hashtags.join(' OR '))}&tweet.fields=public_metrics,author_id,created_at,lang,geo,referenced_tweets,in_reply_to_user_id,conversation_id&expansions=author_id&user.fields=public_metrics,location,profile_image_url&max_results=100&start_time=${startTime}${tokenParam}`
 
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
@@ -176,6 +176,27 @@ export async function GET(req: NextRequest) {
         }, { onConflict: 'tweet_id' })
 
         totalCollected++
+
+        // Extract connections (reply/RT/quote relationships)
+        if (tweet.referenced_tweets) {
+          for (const ref of tweet.referenced_tweets) {
+            // ref.type = 'replied_to' | 'retweeted' | 'quoted'
+            // ref.id = the referenced tweet id
+            // We need to find the author of the referenced tweet
+            const refTweet = allTweets.find((t: any) => t.id === ref.id)
+            const refAuthorId = refTweet?.author_id || tweet.in_reply_to_user_id
+            if (refAuthorId && refAuthorId !== tweet.author_id) {
+              await db.from('radar_connections').upsert({
+                event_id: event.id,
+                source_x_id: tweet.author_id,
+                target_x_id: refAuthorId,
+                connection_type: ref.type,
+                tweet_id: tweet.id,
+                created_at: tweet.created_at,
+              }, { onConflict: 'event_id,tweet_id,connection_type' })
+            }
+          }
+        }
       }
 
       // Recalculate scores for this event
