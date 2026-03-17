@@ -107,7 +107,8 @@ export async function GET(req: NextRequest) {
       .select('*', { count: 'exact', head: true })
       .eq('event_id', event.id)
 
-    const lookbackMs = (existingCount || 0) < 50 ? 7 * 86400000 : 3600000
+    // Force 7 days lookback to capture more connection data
+    const lookbackMs = 7 * 86400000
     const startTime = new Date(Date.now() - lookbackMs).toISOString()
 
     try {
@@ -180,9 +181,6 @@ export async function GET(req: NextRequest) {
         // Extract connections (reply/RT/quote relationships)
         if (tweet.referenced_tweets) {
           for (const ref of tweet.referenced_tweets) {
-            // ref.type = 'replied_to' | 'retweeted' | 'quoted'
-            // ref.id = the referenced tweet id
-            // We need to find the author of the referenced tweet
             const refTweet = allTweets.find((t: any) => t.id === ref.id)
             const refAuthorId = refTweet?.author_id || tweet.in_reply_to_user_id
             if (refAuthorId && refAuthorId !== tweet.author_id) {
@@ -196,6 +194,17 @@ export async function GET(req: NextRequest) {
               }, { onConflict: 'event_id,tweet_id,connection_type' })
             }
           }
+        }
+        // Also capture in_reply_to even without referenced_tweets
+        if (!tweet.referenced_tweets && tweet.in_reply_to_user_id && tweet.in_reply_to_user_id !== tweet.author_id) {
+          await db.from('radar_connections').upsert({
+            event_id: event.id,
+            source_x_id: tweet.author_id,
+            target_x_id: tweet.in_reply_to_user_id,
+            connection_type: 'replied_to',
+            tweet_id: tweet.id,
+            created_at: tweet.created_at,
+          }, { onConflict: 'event_id,tweet_id,connection_type' })
         }
       }
 
