@@ -524,7 +524,8 @@
 /* NETWORK */
 .r-network-container {
   background: var(--radar-surface2);
-  height: 300px;
+  flex: 1;
+  min-height: 280px;
   position: relative;
   overflow: hidden;
 }
